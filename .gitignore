@@ -1,3 +1,8 @@
 node_modules
 
 *.log
+
+temp
+
+module_1/task_2/csv
+
