@@ -1,5 +1,4 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
 
 const writeLinesToStream = ({ stream, getLine, numberOfLines, callback }) => {
   for (let i = numberOfLines; i > 0; i--) {
@@ -20,7 +19,7 @@ const writeLinesToStream = ({ stream, getLine, numberOfLines, callback }) => {
 
 const createLine = (index) => `chert${index},${index}\n`;
 
-const writeMockCsvFile = (filePath, numberOfLines) => {
+export const writeMockCsvFile = (filePath, numberOfLines) => {
   return new Promise((resolve, reject) => {
     const stream = fs.createWriteStream(filePath);
     stream.on("error", reject);
@@ -34,5 +33,3 @@ const writeMockCsvFile = (filePath, numberOfLines) => {
     });
   });
 };
-
-module.exports = { writeMockCsvFile };

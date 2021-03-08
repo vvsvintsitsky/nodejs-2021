@@ -1,3 +1,3 @@
-const { ReverseTransform } = require("./ReverseTransform");
+import { ReverseTransform } from "./ReverseTransform";
 
 process.stdin.pipe(new ReverseTransform()).pipe(process.stdout);

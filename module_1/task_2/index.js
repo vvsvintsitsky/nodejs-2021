@@ -1,7 +1,7 @@
-const csvtojsonV2 = require("csvtojson/v2");
+import csvtojsonV2 from "csvtojson/v2";
 
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
 const { writeMockCsvFile } = require("./util");
 

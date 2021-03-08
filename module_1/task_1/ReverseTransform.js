@@ -1,6 +1,6 @@
-const { Transform } = require("stream");
+import { Transform } from "stream";
 
-class ReverseTransform extends Transform {
+export class ReverseTransform extends Transform {
   _transform(chunk, _, callback) {
     const line = chunk.toString();
     this.push(
@@ -12,7 +12,3 @@ class ReverseTransform extends Transform {
     callback();
   }
 }
-
-module.exports = {
-  ReverseTransform,
-};
