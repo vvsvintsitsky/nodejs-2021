@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "newLine": "lf",
+    "sourceMap": true,
+    "strict": true,
+    "preserveSymlinks": true,
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "outDir": "build/src",
+    "lib": ["ES2020"]
+  },
+  "include": ["src/**/*"]
+}
