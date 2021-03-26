@@ -4,23 +4,23 @@ import { UserStorage } from "../storage/types";
 export class UserService {
   constructor(private userStorage: UserStorage) {}
 
-  getById(id: string) {
+  public getById(id: string) {
     return this.userStorage.getById(id);
   }
 
-  markAsDeleted(id: string) {
-    this.userStorage.update(id, { isDeleted: true });
-  }
-
-  getAutoSuggestUsers(loginSubstring: string, limit: number) {
+  public getAutoSuggestUsers(loginSubstring: string, limit: number) {
     return this.userStorage.getAutoSuggestUsers(loginSubstring, limit);
   }
 
-  create(user: User) {
+  public create(user: User) {
     this.userStorage.create(user);
   }
 
-  update(id: string, userPart: Partial<User>) {
+  public update(id: string, userPart: User) {
     this.userStorage.update(id, userPart);
+  }
+
+  public markAsDeleted(id: string) {
+    this.userStorage.markAsDeleted(id);
   }
 }
