@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc --project ./",
     "start": "nodemon ./src/index.ts",
-    "lint": "eslint ./ --ext ts",
-    "e2e": "ts-node ./src/apiTest.test.ts"
+    "lint": "eslint ./ --ext ts --fix",
+    "e2e": "ts-node ./e2e/userApiTest.test.ts"
   },
   "repository": {
     "type": "git",
@@ -22,8 +22,14 @@
   "devDependencies": {
     "@types/express": "4.17.11",
     "@types/node": "14.14.32",
+    "@typescript-eslint/eslint-plugin": "4.19.0",
+    "@typescript-eslint/parser": "4.19.0",
     "babel-eslint": "10.1.0",
     "eslint": "7.21.0",
+    "eslint-config-airbnb-typescript": "12.3.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.23.1",
     "nodemon": "2.0.7",
     "ts-node": "9.1.1",
     "typescript": "4.2.3"

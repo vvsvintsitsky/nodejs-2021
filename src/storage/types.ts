@@ -1,4 +1,4 @@
-import { User } from "../model/User";
+import { User } from '../model/User';
 
 export interface UserStorage {
   getById(id: string): User | undefined;

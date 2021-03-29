@@ -1,18 +1,18 @@
-import express from "express";
+import express from 'express';
 
-import { InMemoryUserStorage } from "./storage/InMemoryUserStorage";
-import { UserService } from "./service/UserService";
-import { createUserRouter } from "./router/createUserRouter";
+import { InMemoryUserStorage } from './storage/InMemoryUserStorage';
+import { UserService } from './service/UserService';
+import { createUserRouter } from './router/createUserRouter';
 
-import { PORT } from "./config";
+import { PORT } from './config';
 
 const server = express();
 
 server.use(express.json());
 
 server.use(
-  "/users",
-  createUserRouter(new UserService(new InMemoryUserStorage()))
+    '/users',
+    createUserRouter(new UserService(new InMemoryUserStorage()))
 );
 
-server.listen(PORT, () => console.log("online"));
+server.listen(PORT, () => console.log('online'));

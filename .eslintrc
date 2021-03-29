@@ -1,6 +1,12 @@
 {
-  "parser": "babel-eslint",
-  "plugins": [],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/eslint-recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "ignorePatterns": ["*/*.test.*", "/build/"],
+  "plugins": ["@typescript-eslint"],
   "env": {
     "browser": true,
     "node": true,
@@ -9,6 +15,7 @@
     "jest": true
   },
   "parserOptions": {
+    "project": "./tsconfig.json",
     "ecmaVersion": 2019,
     "sourceType": "module",
     "ecmaFeatures": {
@@ -31,6 +38,7 @@
     }
   },
   "rules": {
+    "@typescript-eslint/no-unused-vars": ["error"],
     "no-debugger": 1,
     // Possible errors
     "comma-dangle": [2, "never"],
@@ -140,7 +148,7 @@
     "no-shadow": 2,
     "no-undef-init": 2,
     "no-undef": 2,
-    "no-unused-vars": 2,
+    "no-unused-vars": "off",
     // Node.js
     "callback-return": 2,
     "no-mixed-requires": 2,
@@ -192,8 +200,7 @@
       4,
       {
         "ignoreUrls": true,
-        "ignoreComments": false,
-        "ignorePattern": "^\\s*(const|let|var)\\s+\\w+\\s+\\=\\s+\\/.*\\/(|i|g|m|ig|im|gm|igm);?$"
+        "ignoreComments": false
       }
     ],
     "max-nested-callbacks": [2, 4],

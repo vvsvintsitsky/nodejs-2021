@@ -1,33 +1,43 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from 'express';
 
-export function extractDataFromBody(req: Request) {
-  return req.body;
+import { Validator } from './types';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type RequestPayload = Record<string, any>;
+
+interface DataExtractor<T extends RequestPayload> {
+    (req: Request): T;
 }
 
-export function extractDataFromParams(req: Request) {
-  return req.params;
+export function extractDataFromBody<T extends RequestPayload>(req: Request): T {
+    return req.body;
 }
 
-export function createValidationMiddleware(
-  validate: (
-    data: Record<string, any>
-  ) => { message?: string; dataPath?: string }[] | null | undefined,
-  extractDataToValidate = extractDataFromBody
+export function extractDataFromParams<T extends RequestPayload>(req: Request<T>): T {
+    return req.params;
+}
+
+export function createValidationMiddleware<T extends RequestPayload>(
+    validate: Validator<T>,
+    extractDataToValidate: DataExtractor<T> = extractDataFromBody
 ) {
-  return function schemaValidationMiddleware(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    const errors = validate(extractDataToValidate(req))?.map(({ message, dataPath }) => ({
-      message,
-      dataPath,
-    }));
+    return function schemaValidationMiddleware(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): void {
+        const errors = validate(extractDataToValidate(req))?.map(
+            ({ message, dataPath }) => ({
+                message,
+                dataPath
+            })
+        );
 
-    if (!errors) {
-      next();
-    } else {
-      res.status(400).json(errors);
-    }
-  };
+        if (!errors) {
+            // eslint-disable-next-line callback-return
+            next();
+        } else {
+            res.status(400).json(errors);
+        }
+    };
 }

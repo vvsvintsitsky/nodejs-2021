@@ -1,11 +1,13 @@
-import Ajv, { Schema } from "ajv";
+import Ajv, { Schema } from 'ajv';
 
-export function createSchemaValidator(schema: Schema) {
-  const ajv = new Ajv({ allErrors: true });
-  const validate = ajv.compile(schema);
+import { Validator } from './types';
 
-  return function schemaValidator(data: Record<string, any>) {
-    validate(data);
-    return validate.errors;
-  }
+export function createSchemaValidator<P>(schema: Schema): Validator<P> {
+    const ajv = new Ajv({ allErrors: true });
+    const validate = ajv.compile(schema);
+
+    return function schemaValidator(data: P) {
+        validate(data);
+        return validate.errors;
+    };
 }
