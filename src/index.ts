@@ -1,18 +1,10 @@
-import express from 'express';
-
 import { InMemoryUserStorage } from './storage/InMemoryUserStorage';
 import { UserService } from './service/UserService';
-import { createUserRouter } from './router/createUserRouter';
 
 import { PORT } from './config';
 
-const server = express();
+import { createApplication } from './createApplication';
 
-server.use(express.json());
-
-server.use(
-    '/users',
-    createUserRouter(new UserService(new InMemoryUserStorage()))
+createApplication(new UserService(new InMemoryUserStorage())).listen(PORT, () =>
+    console.log('server has started')
 );
-
-server.listen(PORT, () => console.log('online'));

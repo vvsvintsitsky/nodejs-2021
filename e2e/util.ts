@@ -1,9 +1,10 @@
-import { request, IncomingMessage } from 'http';
+import { request, IncomingMessage, Server } from 'http';
+import { Express } from 'express';
 
 export const logResponse = (res: IncomingMessage): void => {
     res.setEncoding('utf8');
     res.on('data', (chunk) => {
-        console.log(`Response: ${chunk}`);
+        console.log(chunk);
     });
 };
 
@@ -60,3 +61,12 @@ export function makeRequest({
 export const setupRequests = (host: string, port: number) => (
     args: Omit<RequestArgs, 'port' | 'host'>
 ) => makeRequest({ ...args, host, port });
+
+interface ServerHandle { server?: Server }
+
+export const startServer = (port: number, app: Express): [ServerHandle, Promise<void>] => {
+    const handle: ServerHandle = {};
+    return [handle, new Promise((resolve) => {
+        handle.server = app.listen(port, () => resolve(undefined));
+    })];
+};
