@@ -1,4 +1,8 @@
 import { Router } from 'express';
+
+import { EntityAlreadyExistsError } from '../error/EntityAlreadyExistsError';
+import { EntityNotFoundError } from '../error/EntityNotFoundError';
+
 import { UserService } from '../service/UserService';
 import {
     createValidationMiddleware,
@@ -39,13 +43,31 @@ export function createUserRouter(userService: UserService): Router {
     });
 
     router.put(USER_PATH, userValidationMiddleware, (req, res) => {
-        userService.update(req.params.id, req.body);
-        res.sendStatus(200);
+        try {
+            userService.update(req.params.id, req.body);
+            res.sendStatus(200);
+        } catch (error) {
+            if (error instanceof EntityNotFoundError) {
+                res.status(404);
+                res.json(error.message);
+            } else {
+                throw error;
+            }
+        }
     });
 
     router.post('/create', userValidationMiddleware, (req, res) => {
-        userService.create(req.body);
-        res.sendStatus(201);
+        try {
+            userService.create(req.body);
+            res.sendStatus(201);
+        } catch (error) {
+            if (error instanceof EntityAlreadyExistsError) {
+                res.status(400);
+                res.json(error.message);
+            } else {
+                throw error;
+            }
+        }
     });
 
     router.post(

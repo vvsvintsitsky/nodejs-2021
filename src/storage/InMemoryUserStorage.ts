@@ -1,3 +1,5 @@
+import { EntityAlreadyExistsError } from '../error/EntityAlreadyExistsError';
+import { EntityNotFoundError } from '../error/EntityNotFoundError';
 import { User } from '../model/User';
 
 import { UserStorage } from './types';
@@ -15,7 +17,7 @@ export class InMemoryUserStorage implements UserStorage {
       const user = this.getById(id);
 
       if (!user) {
-          throw new Error(`User with ${id} id was not found`);
+          throw new EntityNotFoundError(`User with ${id} id was not found`);
       }
 
       Object.assign(user, userToUpdate);
@@ -23,7 +25,9 @@ export class InMemoryUserStorage implements UserStorage {
 
   public create(user: User): void {
       if (this.users.find((existingUser) => existingUser.id === user.id)) {
-          throw new Error(`User with id '${user.id}' already exists`);
+          throw new EntityAlreadyExistsError(
+              `User with id '${user.id}' already exists`
+          );
       }
 
       this.users.push(user);
