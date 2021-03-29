@@ -1,10 +1,26 @@
 import { Router } from "express";
 import { UserService } from "../service/UserService";
+import { createSchemaValidator } from "../validation/createSchemaValidator";
+import { createValidationMiddleware } from "../validation/createValidationMiddleware";
+
+const USER_PATTERN = "/user/:id";
+
+const validateUserMiddleware = createValidationMiddleware(
+  createSchemaValidator({
+    properties: {
+      id: { type: "string" },
+      login: { type: "string" },
+      password: { type: "string" },
+      age: { type: "int32" },
+      isDeleted: { type: "boolean" },
+    },
+  })
+);
 
 export function createUserRouter(userService: UserService) {
   const router = Router();
 
-  router.get("/user/:id", (req, res) => {
+  router.get(USER_PATTERN, (req, res) => {
     const user = userService.getById(req.params.id);
 
     if (user) {
@@ -15,14 +31,13 @@ export function createUserRouter(userService: UserService) {
     res.sendStatus(404);
   });
 
-  router.delete("/user/:id", (req, res) => {
+  router.delete(USER_PATTERN, (req, res) => {
     userService.markAsDeleted(req.params.id);
     res.sendStatus(200);
   });
 
-  router.put("/user/:id", (req, res) => {
-    const { id, ...sanitizedUser } = req.body;
-    userService.update(req.params.id, sanitizedUser);
+  router.put(USER_PATTERN, (req, res) => {
+    userService.update(req.params.id, req.body);
     res.sendStatus(200);
   });
 
