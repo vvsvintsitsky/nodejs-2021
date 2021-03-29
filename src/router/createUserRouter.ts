@@ -1,26 +1,28 @@
 import { Router } from "express";
 import { UserService } from "../service/UserService";
-import { createSchemaValidator } from "../validation/createSchemaValidator";
-import { createValidationMiddleware } from "../validation/createValidationMiddleware";
+import {
+  createValidationMiddleware,
+  extractDataFromParams,
+} from "../validation/createValidationMiddleware";
+import {
+  validateUserId,
+  validateUser,
+  validateAutosuggest,
+} from "../validation/userValidators";
 
-const USER_PATTERN = "/user/:id";
+const USER_PATH = "/user/:id";
 
-const validateUserMiddleware = createValidationMiddleware(
-  createSchemaValidator({
-    properties: {
-      id: { type: "string" },
-      login: { type: "string" },
-      password: { type: "string" },
-      age: { type: "int32" },
-      isDeleted: { type: "boolean" },
-    },
-  })
+const userValidationMiddleware = createValidationMiddleware(validateUser);
+
+const userIdValidationMiddleware = createValidationMiddleware(
+  validateUserId,
+  extractDataFromParams
 );
 
 export function createUserRouter(userService: UserService) {
   const router = Router();
 
-  router.get(USER_PATTERN, (req, res) => {
+  router.get(USER_PATH, userIdValidationMiddleware, (req, res) => {
     const user = userService.getById(req.params.id);
 
     if (user) {
@@ -31,32 +33,29 @@ export function createUserRouter(userService: UserService) {
     res.sendStatus(404);
   });
 
-  router.delete(USER_PATTERN, (req, res) => {
+  router.delete(USER_PATH, userIdValidationMiddleware, (req, res) => {
     userService.markAsDeleted(req.params.id);
     res.sendStatus(200);
   });
 
-  router.put(USER_PATTERN, (req, res) => {
+  router.put(USER_PATH, userValidationMiddleware, (req, res) => {
     userService.update(req.params.id, req.body);
     res.sendStatus(200);
   });
 
-  router.post("/create", (req, res) => {
+  router.post("/create", userValidationMiddleware, (req, res) => {
     userService.create(req.body);
     res.sendStatus(201);
   });
 
-  router.get("/autoSuggest", (req, res) => {
-    const loginPart = req.query.loginPart ?? "";
-    const limit = Number(req.query.limit) || 10;
-
-    if (typeof loginPart !== "string" || typeof limit !== "number") {
-      res.sendStatus(400);
-      return;
+  router.post(
+    "/autoSuggest",
+    createValidationMiddleware(validateAutosuggest),
+    (req, res) => {
+      const { loginPart, limit } = req.body;
+      res.json(userService.getAutoSuggestUsers(loginPart, limit));
     }
-
-    res.json(userService.getAutoSuggestUsers(loginPart, limit));
-  });
+  );
 
   return router;
 }

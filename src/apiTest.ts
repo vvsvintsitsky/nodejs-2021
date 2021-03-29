@@ -8,10 +8,10 @@ import { createSchemaValidator } from "./validation/createSchemaValidator";
 
 const defaultUser: User = {
   id: "1",
-  age: 1,
+  age: 4,
   isDeleted: false,
   login: "autoSuggest",
-  password: "pass",
+  password: "a3aXsdq111zXX",
 };
 
 const logResponse = (res: IncomingMessage) => {
@@ -73,50 +73,51 @@ const updateUser = (id: string, user: User) => {
   return makeJsonRequest(`/users/user/${id}`, "PUT", user, logResponse);
 };
 
-// Promise.all(
-//   [
-//     createUser(defaultUser),
-//     createUser({ ...defaultUser, id: "2" }),
-//     createUser({ ...defaultUser, id: "3" }),
-//   ].map(sendRequest)
-// )
-//   .then(() => sendRequest(getUser(defaultUser.id)))
-//   .then(() =>
-//     sendRequest(
-//       updateUser(defaultUser.id, { ...defaultUser, age: defaultUser.age + 20 })
-//     )
-//   )
-//   .then(() => sendRequest(getUser(defaultUser.id)))
-//   .then(() =>
-//     sendRequest(
-//       makeRequest(
-//         `/users/autoSuggest?loginPart=${defaultUser.login.substr(
-//           0,
-//           2
-//         )}&limit=${2}`,
-//         "GET",
-//         logResponse
-//       )
-//     )
-//   )
-//   .then(() =>
-//     sendRequest(
-//       makeRequest(`/users/user/${defaultUser.id}`, "DELETE", logResponse)
-//     )
-//   )
-//   .then(() =>
-//     sendRequest(
-//       makeRequest(`/users/user/${defaultUser.id}`, "GET", logResponse)
-//     )
-//   );
+Promise.all(
+  [
+    createUser(defaultUser),
+    createUser({ ...defaultUser, id: "2" }),
+    createUser({ ...defaultUser, id: "3" }),
+  ].map(sendRequest)
+)
+  .then(() => sendRequest(getUser(defaultUser.id)))
+  .then(() =>
+    sendRequest(
+      updateUser(defaultUser.id, { ...defaultUser, age: defaultUser.age + 20 })
+    )
+  )
+  .then(() => sendRequest(getUser(defaultUser.id)))
+  .then(() =>
+    sendRequest(
+      makeJsonRequest(
+        "/users/autoSuggest",
+        "POST",
+        { limit: 10, loginPart: defaultUser.login.substr(0, 2) },
+        logResponse
+      )
+    )
+  )
+  .then(() =>
+    sendRequest(
+      makeRequest(`/users/user/${defaultUser.id}`, "DELETE", logResponse)
+    )
+  )
+  .then(() =>
+    sendRequest(
+      makeRequest(`/users/user/${defaultUser.id}`, "GET", logResponse)
+    )
+  );
 
-const schema: Schema = {
-  type: "object",
-  properties: {
-    foo: { type: "number", minimum: 3, maximum: 120 },
-    bar: { type: "string" },
-  },
-  required: ["foo", "bar"],
-};
+// const schema: Schema = {
+//   type: "object",
+//   properties: {
+//     id: { type: "string", pattern: "^(?!\s*$).+" },
+//     login: { type: "string", pattern: "^(?!\s*$).+" },
+//     password: { type: "string", pattern: "^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$" },
+//     age: { type: "integer", minimum: 3, maximum: 120 },
+//     isDeleted: { type: "boolean" },
+//   },
+//   required: ["password"],
+// };
 
-console.log(createSchemaValidator(schema)({ foo: 1, bar: "" }));
+// console.log(createSchemaValidator(schema)({password: "3aXsdq111zXX" }));
