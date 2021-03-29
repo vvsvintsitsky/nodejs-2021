@@ -1,14 +1,20 @@
 import { request, IncomingMessage, Server } from 'http';
 import { Express } from 'express';
 
-export const logResponse = (res: IncomingMessage): void => {
-    res.setEncoding('utf8');
-    res.on('data', (chunk) => {
-        console.log(chunk);
+export const parseResponse = (res: IncomingMessage): Promise<string> => {
+    return new Promise((resolve) => {
+        res.setEncoding('utf8');
+        let responseBody = '';
+        res.on('data', (chunk) => {
+            responseBody += chunk;
+        });
+        res.on('end', () => {
+            resolve(JSON.parse(responseBody));
+        });
     });
 };
 
-interface RequestArgs<T = unknown> {
+export interface RequestArgs<T = unknown> {
   host: string;
   path: string;
   method: 'GET' | 'POST' | 'DELETE' | 'PUT';
@@ -62,11 +68,19 @@ export const setupRequests = (host: string, port: number) => (
     args: Omit<RequestArgs, 'port' | 'host'>
 ) => makeRequest({ ...args, host, port });
 
-interface ServerHandle { server?: Server }
+interface ServerHandle {
+  server?: Server;
+}
 
-export const startServer = (port: number, app: Express): [ServerHandle, Promise<void>] => {
+export const startServer = (
+    port: number,
+    app: Express
+): [ServerHandle, Promise<void>] => {
     const handle: ServerHandle = {};
-    return [handle, new Promise((resolve) => {
-        handle.server = app.listen(port, () => resolve(undefined));
-    })];
+    return [
+        handle,
+        new Promise((resolve) => {
+            handle.server = app.listen(port, () => resolve(undefined));
+        })
+    ];
 };
