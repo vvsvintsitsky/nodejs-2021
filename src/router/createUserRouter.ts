@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import { CustomRequestError } from '../error/CustomRequestError';
 import { EntityAlreadyExistsError } from '../error/EntityAlreadyExistsError';
 import { EntityNotFoundError } from '../error/EntityNotFoundError';
 
@@ -42,31 +43,29 @@ export function createUserRouter(userService: UserService): Router {
         res.sendStatus(200);
     });
 
-    router.put(USER_PATH, userValidationMiddleware, (req, res) => {
+    router.put(USER_PATH, userValidationMiddleware, (req, res, next) => {
         try {
             userService.update(req.params.id, req.body);
             res.sendStatus(200);
         } catch (error) {
-            if (error instanceof EntityNotFoundError) {
-                res.status(404);
-                res.json(error.message);
-            } else {
-                throw error;
-            }
+            const errorToThrow =
+        error instanceof EntityNotFoundError
+            ? new CustomRequestError(404, error.message)
+            : error;
+            return next(errorToThrow);
         }
     });
 
-    router.post('/create', userValidationMiddleware, (req, res) => {
+    router.post('/create', userValidationMiddleware, (req, res, next) => {
         try {
             userService.create(req.body);
             res.sendStatus(201);
         } catch (error) {
-            if (error instanceof EntityAlreadyExistsError) {
-                res.status(400);
-                res.json(error.message);
-            } else {
-                throw error;
-            }
+            const errorToThrow =
+        error instanceof EntityAlreadyExistsError
+            ? new CustomRequestError(400, error.message)
+            : error;
+            return next(errorToThrow);
         }
     });
 

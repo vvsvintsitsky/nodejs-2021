@@ -34,10 +34,9 @@ export function createValidationMiddleware<T extends RequestPayload>(
         );
 
         if (!errors) {
-            // eslint-disable-next-line callback-return
-            next();
-        } else {
-            res.status(400).json(errors);
+            return next();
         }
+
+        res.status(400).json(errors);
     };
 }

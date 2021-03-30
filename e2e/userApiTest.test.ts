@@ -74,10 +74,11 @@ async function testUserApi() {
         'not all users were suggested'
     );
 
-    await sendRequest({
+    const deleteResponse = await sendRequest({
         path: `/users/user/${defaultUser.id}`,
         method: 'DELETE'
     });
+    assert.strictEqual(deleteResponse.statusCode, 200);
     const response = await sendRequest({
         path: `/users/user/${defaultUser.id}`,
         method: 'GET'
