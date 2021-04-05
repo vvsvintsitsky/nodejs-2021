@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "task1": "ts-node ./module_1/dist/task_1",
+    "task2": "ts-node ./module_1/dist/task_2",
     "build": "tsc --project ./",
     "start": "nodemon ./src/index.ts",
     "lint": "eslint ./ --ext ts --fix",
@@ -32,6 +34,7 @@
   },
   "dependencies": {
     "ajv": "7.2.4",
+    "csvtojson": "2.0.10",
     "express": "4.17.1"
   }
 }
