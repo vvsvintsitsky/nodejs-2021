@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "task1": "babel ./module_1/task_1 --out-dir ./module_1/dist/task_1 && nodemon ./module_1/dist/task_1",
-    "task2": "babel ./module_1/task_2 --out-dir ./module_1/dist/task_2 && nodemon ./module_1/dist/task_2"
+    "task1": "ts-node ./module_1/dist/task_1",
+    "task2": "ts-node ./module_1/dist/task_2",
+    "build": "tsc --project ./",
+    "start": "nodemon ./src/index.ts",
+    "lint": "eslint ./ --ext ts --fix",
+    "e2e": "ts-node ./e2e/userApiTest.test.ts"
   },
   "repository": {
     "type": "git",
@@ -18,12 +22,19 @@
   },
   "homepage": "https://github.com/vvsvintsitsky/nodejs-2021#readme",
   "devDependencies": {
-    "@babel/cli": "^7.13.0",
-    "@babel/core": "^7.13.8",
-    "@babel/preset-env": "^7.13.9",
-    "nodemon": "^2.0.7"
+    "@types/express": "4.17.11",
+    "@types/node": "14.14.32",
+    "@typescript-eslint/eslint-plugin": "4.19.0",
+    "@typescript-eslint/parser": "4.19.0",
+    "babel-eslint": "10.1.0",
+    "eslint": "7.21.0",
+    "nodemon": "2.0.7",
+    "ts-node": "9.1.1",
+    "typescript": "4.2.3"
   },
   "dependencies": {
-    "csvtojson": "^2.0.10"
+    "ajv": "7.2.4",
+    "csvtojson": "2.0.10",
+    "express": "4.17.1"
   }
 }
