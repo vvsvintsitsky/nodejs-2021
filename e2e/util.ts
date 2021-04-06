@@ -1,7 +1,7 @@
 import { request, IncomingMessage, Server } from 'http';
 import { Express } from 'express';
 
-export const parseResponse = (res: IncomingMessage): Promise<string> => {
+export function parseResponse(res: IncomingMessage): Promise<string> {
     return new Promise((resolve) => {
         res.setEncoding('utf8');
         let responseBody = '';
@@ -12,7 +12,7 @@ export const parseResponse = (res: IncomingMessage): Promise<string> => {
             resolve(JSON.parse(responseBody));
         });
     });
-};
+}
 
 export interface RequestArgs<T = unknown> {
   host: string;
@@ -20,7 +20,7 @@ export interface RequestArgs<T = unknown> {
   method: 'GET' | 'POST' | 'DELETE' | 'PUT';
   callback?: (res: IncomingMessage) => void;
   headers?: Record<string, string | number>;
-  port: number;
+  port?: number;
   payload?: T;
 }
 
@@ -63,10 +63,29 @@ export function makeRequest({
     });
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const setupRequests = (host: string, port: number) => (
-    args: Omit<RequestArgs, 'port' | 'host'>
-) => makeRequest({ ...args, host, port });
+type StrippedRequestARgs = Omit<RequestArgs, 'port' | 'host'>;
+
+interface RequestSender {
+    (args: StrippedRequestARgs): Promise<IncomingMessage>
+}
+
+interface RequestSenderAndParser<T = unknown> {
+    (args: StrippedRequestARgs): Promise<T>
+}
+
+interface RequestUtils {
+    sendRequest: RequestSender;
+    sendRequestAndParseResponse: RequestSenderAndParser;
+}
+
+export function setupRequests(host: string, port?: number): RequestUtils {
+    const sendRequest: RequestSender = args => makeRequest({ host, port, ...args });
+    return {
+        sendRequest,
+        sendRequestAndParseResponse: args => sendRequest(args).then(parseResponse)
+    };
+}
+
 
 interface ServerHandle {
   server?: Server;
