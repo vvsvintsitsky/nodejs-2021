@@ -27,8 +27,8 @@ const userIdValidationMiddleware = createValidationMiddleware(
 export function createUserRouter(userService: UserService): Router {
     const router = Router();
 
-    router.get(USER_PATH, userIdValidationMiddleware, (req, res) => {
-        const user = userService.getById(req.params.id);
+    router.get(USER_PATH, userIdValidationMiddleware, async (req, res) => {
+        const user = await userService.getById(req.params.id);
 
         if (user) {
             res.json(user);
@@ -38,14 +38,14 @@ export function createUserRouter(userService: UserService): Router {
         res.sendStatus(404);
     });
 
-    router.delete(USER_PATH, userIdValidationMiddleware, (req, res) => {
-        userService.markAsDeleted(req.params.id);
+    router.delete(USER_PATH, userIdValidationMiddleware, async (req, res) => {
+        await userService.markAsDeleted(req.params.id);
         res.sendStatus(200);
     });
 
-    router.put(USER_PATH, userValidationMiddleware, (req, res, next) => {
+    router.put(USER_PATH, userValidationMiddleware, async (req, res, next) => {
         try {
-            userService.update(req.params.id, req.body);
+            await userService.update(req.params.id, req.body);
             res.sendStatus(200);
         } catch (error) {
             const errorToThrow =
@@ -56,9 +56,9 @@ export function createUserRouter(userService: UserService): Router {
         }
     });
 
-    router.post('/create', userValidationMiddleware, (req, res, next) => {
+    router.post('/create', userValidationMiddleware, async (req, res, next) => {
         try {
-            userService.create(req.body);
+            await userService.create(req.body);
             res.sendStatus(201);
         } catch (error) {
             const errorToThrow =
@@ -72,9 +72,9 @@ export function createUserRouter(userService: UserService): Router {
     router.post(
         '/autoSuggest',
         createValidationMiddleware(validateAutosuggest),
-        (req, res) => {
+        async (req, res) => {
             const { loginPart, limit } = req.body;
-            res.json(userService.getAutoSuggestUsers(loginPart, limit));
+            res.json(await userService.getAutoSuggestUsers(loginPart, limit));
         }
     );
 

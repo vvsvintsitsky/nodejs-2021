@@ -1,20 +1,25 @@
 import knex from 'knex';
 
-import { InMemoryUserStorage } from './storage/InMemoryUserStorage';
+import { UserPersistentStorage } from './storage/UserPersistentStorage';
 import { UserService } from './service/UserService';
 import { findCommandLineArg } from './utils/findCommandLineArg';
 import { retryAction } from './utils/retryAction';
 
-import { PORT } from './config';
+import { PORT, POOL_MIN_SIZE, POOL_MAX_SIZE } from './config';
 
 import { createApplication } from './createApplication';
 
 const port = process.env.PORT || findCommandLineArg('-p') || PORT;
 
+const poolMinSize =
+  Number(process.env.DB_CONNECION_POOL_MIN_SIZE) || POOL_MIN_SIZE;
+const poolMaxSize =
+  Number(process.env.DB_CONNECION_POOL_MAX_SIZE) || POOL_MAX_SIZE;
+
 const connection = knex({
     client: 'pg',
     connection: process.env.DATASOURCE_URL,
-    pool: { min: 0, max: 4 }
+    pool: { min: poolMinSize, max: poolMaxSize }
 });
 
 (async () => {
@@ -28,10 +33,9 @@ const connection = knex({
 
         console.log('connection created');
 
-        createApplication(new UserService(new InMemoryUserStorage())).listen(
-            port,
-            () => console.log(`server has started ${port}`)
-        );
+        createApplication(
+            new UserService(new UserPersistentStorage(connection))
+        ).listen(port, () => console.log(`server has started ${port}`));
     } catch (error) {
         console.log(error);
     }

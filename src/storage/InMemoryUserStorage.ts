@@ -9,11 +9,11 @@ const isActivedUser = (user: User) => !user.isDeleted;
 export class InMemoryUserStorage implements UserStorage {
   private users: User[] = [];
 
-  public getById(id: string): User | undefined {
+  public async getById(id: string): Promise<User | undefined> {
       return this.users.find((user) => user.id === id && isActivedUser(user));
   }
 
-  public update(id: string, userToUpdate: User): void {
+  public async update(id: string, userToUpdate: User): Promise<void> {
       const user = this.getById(id);
 
       if (!user) {
@@ -23,7 +23,7 @@ export class InMemoryUserStorage implements UserStorage {
       Object.assign(user, userToUpdate);
   }
 
-  public create(user: User): void {
+  public async create(user: User): Promise<void> {
       if (this.users.find((existingUser) => existingUser.id === user.id)) {
           throw new EntityAlreadyExistsError(
               `User with id '${user.id}' already exists`
@@ -33,7 +33,7 @@ export class InMemoryUserStorage implements UserStorage {
       this.users.push(user);
   }
 
-  public getAutoSuggestUsers(loginSubstring: string, limit: number): User[] {
+  public async getAutoSuggestUsers(loginSubstring: string, limit: number): Promise<User[]> {
       return this.users
           .filter(isActivedUser)
           .filter((user) => user.login.includes(loginSubstring))
@@ -41,8 +41,8 @@ export class InMemoryUserStorage implements UserStorage {
           .slice(0, limit);
   }
 
-  public markAsDeleted(id: string): void {
-      const user = this.getById(id);
+  public async markAsDeleted(id: string): Promise<void> {
+      const user = await this.getById(id);
 
       if (user) {
           user.isDeleted = true;
