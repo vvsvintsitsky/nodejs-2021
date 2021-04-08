@@ -8,14 +8,16 @@ services:
       - 8080:8080
     environment:
       - PORT=8080
-      - DATASOURCE_URL=postgresql://chertila:asd123zxc@db:5432/usersDB
+      - DATASOURCE_URL=postgresql://chertila:asd123zxc@db:5432/homework
       - DB_CONNECTION_RETRY_COUNT=5
       - DB_CONNECION_RETRY_INTERVAL=5000
+      - DB_CONNECION_POOL_MIN_SIZE=0
+      - DB_CONNECION_POOL_MAX_SIZE=4
   db:
-    image: postgres
+    build: ./db
     ports:
       - 5432:5432
     environment:
       - POSTGRES_PASSWORD=asd123zxc
       - POSTGRES_USER=chertila
-      - POSTGRES_DB=usersDB
+      - POSTGRES_DB=homework
