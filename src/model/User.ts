@@ -5,3 +5,5 @@ export interface User {
   age: number;
   isDeleted: boolean;
 }
+
+export type PersistentUser = Omit<User, 'isDeleted'> & { is_deleted: boolean };
