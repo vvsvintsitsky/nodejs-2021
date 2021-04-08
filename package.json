@@ -9,7 +9,12 @@
     "build": "tsc --project ./",
     "start": "nodemon ./src/index.ts",
     "lint": "eslint ./ --ext ts --fix",
-    "e2e": "ts-node ./e2e/userApiTest.test.ts -p 5000"
+    "e2e": "ts-node ./e2e/userApiTest.test.ts -p 5000",
+    "env:build": "npm run build && docker-compose build",
+    "env:up": "docker-compose up -d",
+    "env:down": "docker-compose down",
+    "env:start": "docker-compose start -d",
+    "env:stop": "docker-compose stop"
   },
   "repository": {
     "type": "git",
@@ -35,6 +40,8 @@
   "dependencies": {
     "ajv": "7.2.4",
     "csvtojson": "2.0.10",
-    "express": "4.17.1"
+    "express": "4.17.1",
+    "knex": "0.95.4",
+    "pg": "8.5.1"
   }
 }
