@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { CustomRequestError } from './CustomRequestError';
 
-const DEFAULT_RESPONSE_DATA: [number, string] = [500, 'An unknown error occured'];
+const DEFAULT_RESPONSE_DATA: [number, string] = [
+    500,
+    'An unknown error occured'
+];
 
 export function errorHandlerMiddleware(
     error: Error,

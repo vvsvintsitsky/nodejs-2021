@@ -1,13 +1,16 @@
 import knex from 'knex';
 
+import { UserDataMapper } from './data-mapper/UserDataMapper';
 import { UserPersistentStorage } from './storage/UserPersistentStorage';
 import { UserService } from './service/UserService';
+
 import { findCommandLineArg } from './utils/findCommandLineArg';
 import { retryAction } from './utils/retryAction';
 
 import { PORT, POOL_MIN_SIZE, POOL_MAX_SIZE } from './config';
 
 import { createApplication } from './createApplication';
+import { PostgresStorageErrorParser } from './storage/PostgresStorageErrorParser';
 
 const port = process.env.PORT || findCommandLineArg('-p') || PORT;
 
@@ -34,7 +37,13 @@ const connection = knex({
         console.log('connection created');
 
         createApplication(
-            new UserService(new UserPersistentStorage(connection))
+            new UserService(
+                new UserPersistentStorage(
+                    connection,
+                    new UserDataMapper(),
+                    new PostgresStorageErrorParser()
+                )
+            )
         ).listen(port, () => console.log(`server has started ${port}`));
     } catch (error) {
         console.log(error);

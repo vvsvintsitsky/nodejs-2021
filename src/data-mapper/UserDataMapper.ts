@@ -1,4 +1,5 @@
-import { User, PersistentUser } from '../model/User';
+import { User } from '../model/User';
+import { PersistentUser } from '../storage/PersistenceUser';
 import { DataMapper } from './types';
 
 export class UserDataMapper

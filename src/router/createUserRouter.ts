@@ -48,11 +48,10 @@ export function createUserRouter(userService: UserService): Router {
             await userService.update(req.params.id, req.body);
             res.sendStatus(200);
         } catch (error) {
-            const errorToThrow =
-        error instanceof EntityNotFoundError
-            ? new CustomRequestError(404, error.message)
-            : error;
-            return next(errorToThrow);
+            if (error instanceof EntityNotFoundError) {
+                return next(new CustomRequestError(404, error.message));
+            }
+            return next(error);
         }
     });
 
@@ -61,11 +60,10 @@ export function createUserRouter(userService: UserService): Router {
             await userService.create(req.body);
             res.sendStatus(201);
         } catch (error) {
-            const errorToThrow =
-        error instanceof EntityAlreadyExistsError
-            ? new CustomRequestError(400, error.message)
-            : error;
-            return next(errorToThrow);
+            if (error instanceof EntityAlreadyExistsError) {
+                return next(new CustomRequestError(400, error.message));
+            }
+            return next(error);
         }
     });
 
