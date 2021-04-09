@@ -1,8 +1,10 @@
 import { Router } from 'express';
+import { ConflictDataRequestError } from '../error/ConflictDataRequestError';
 
 import { CustomRequestError } from '../error/CustomRequestError';
 import { EntityAlreadyExistsError } from '../error/EntityAlreadyExistsError';
 import { EntityNotFoundError } from '../error/EntityNotFoundError';
+import { UniqueConstraintViolationError } from '../error/UniqueConstraintViolationError';
 
 import { UserService } from '../service/UserService';
 import {
@@ -51,6 +53,9 @@ export function createUserRouter(userService: UserService): Router {
             if (error instanceof EntityNotFoundError) {
                 return next(new CustomRequestError(404, error.message));
             }
+            if (error instanceof UniqueConstraintViolationError) {
+                return next(new ConflictDataRequestError());
+            }
             return next(error);
         }
     });
@@ -62,6 +67,9 @@ export function createUserRouter(userService: UserService): Router {
         } catch (error) {
             if (error instanceof EntityAlreadyExistsError) {
                 return next(new CustomRequestError(400, error.message));
+            }
+            if (error instanceof UniqueConstraintViolationError) {
+                return next(new ConflictDataRequestError());
             }
             return next(error);
         }
