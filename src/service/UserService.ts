@@ -13,14 +13,14 @@ export class UserService {
     }
 
     public async create(user: User): Promise<void> {
-        this.userStorage.create(user);
+        return this.userStorage.create(user);
     }
 
     public async update(id: string, userPart: User): Promise<void> {
-        this.userStorage.update(id, userPart);
+        return this.userStorage.update(id, userPart);
     }
 
     public async markAsDeleted(id: string): Promise<void> {
-        this.userStorage.markAsDeleted(id);
+        return this.userStorage.markAsDeleted(id);
     }
 }
