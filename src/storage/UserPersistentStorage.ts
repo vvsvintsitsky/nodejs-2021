@@ -11,13 +11,13 @@ import { UserStorage } from './types';
 const TABLE_NAME = 'users';
 export class UserPersistentStorage implements UserStorage {
     constructor(
-    private connection: Knex,
-    private userMapper: DataMapper<User, PersistentUser>,
-    private storageErrorParser: StorageErrorParser
+        private connection: Knex,
+        private userMapper: DataMapper<User, PersistentUser>,
+        private storageErrorParser: StorageErrorParser
     ) {}
 
     public async getById(id: string): Promise<User | undefined> {
-        const users = await this.connection(TABLE_NAME).where(
+        const users = await this.connection(TABLE_NAME).select().where(
             this.getActiveUserPredicate({ id })
         );
 
@@ -41,6 +41,7 @@ export class UserPersistentStorage implements UserStorage {
         limit: number
     ): Promise<User[]> {
         const users = await this.connection(TABLE_NAME)
+            .select()
             .where(this.getActiveUserPredicate())
             .andWhere('login', 'like', `%${loginSubstring}%`)
             .orderBy('login', 'desc')
@@ -53,7 +54,7 @@ export class UserPersistentStorage implements UserStorage {
     }
 
     private assertUniqueUserOperationResult(id: string, entriesCount: number) {
-        if (entriesCount) {
+        if (!entriesCount) {
             throw new EntityNotFoundError(`User with ${id} id was not found`);
         }
     }
