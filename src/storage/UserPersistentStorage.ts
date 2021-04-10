@@ -44,7 +44,7 @@ export class UserPersistentStorage implements UserStorage {
             .select()
             .where(this.getActiveUserPredicate())
             .andWhere('login', 'like', `%${loginSubstring}%`)
-            .orderBy('login', 'desc')
+            .orderBy('login', 'asc')
             .limit(limit);
         return users.map((user) => this.userMapper.fromPersistence(user));
     }
