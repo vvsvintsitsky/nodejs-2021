@@ -29,20 +29,24 @@ const userIdValidationMiddleware = createValidationMiddleware(
 export function createUserRouter(userService: UserService): Router {
     const router = Router();
 
-    router.get(USER_PATH, userIdValidationMiddleware, async (req, res) => {
-        const user = await userService.getById(req.params.id);
-
-        if (user) {
-            res.json(user);
-            return;
+    router.get(USER_PATH, userIdValidationMiddleware, async (req, res, next) => {
+        try {
+            res.json(await userService.getById(req.params.id));
+        } catch (error) {
+            if (error instanceof EntityNotFoundError) {
+                return next(new CustomRequestError(404, error.message));
+            }
+            return next(error);
         }
-
-        res.sendStatus(404);
     });
 
-    router.delete(USER_PATH, userIdValidationMiddleware, async (req, res) => {
-        await userService.markAsDeleted(req.params.id);
-        res.sendStatus(200);
+    router.delete(USER_PATH, userIdValidationMiddleware, async (req, res, next) => {
+        try {
+            await userService.markAsDeleted(req.params.id);
+            res.sendStatus(200);
+        } catch (error) {
+            return next(error);
+        }
     });
 
     router.put(USER_PATH, userValidationMiddleware, async (req, res, next) => {
@@ -78,9 +82,13 @@ export function createUserRouter(userService: UserService): Router {
     router.post(
         '/autoSuggest',
         createValidationMiddleware(validateAutosuggest),
-        async (req, res) => {
+        async (req, res, next) => {
             const { loginPart, limit } = req.body;
-            res.json(await userService.getAutoSuggestUsers(loginPart, limit));
+            try {
+                res.json(await userService.getAutoSuggestUsers(loginPart, limit));
+            } catch (error) {
+                return next(error);
+            }
         }
     );
 
