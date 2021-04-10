@@ -1,0 +1,244 @@
+{
+	"variables": [],
+	"info": {
+		"name": "users",
+		"_postman_id": "a19b69e9-cf7f-086e-c5ae-446687230f37",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create first user",
+			"request": {
+				"url": "http://localhost:3000/users/create",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"user1\",\n\t\"login\": \"loginUser1\",\n\t\"password\": \"passwordUser1\",\n\t\"age\": 20,\n\t\"isDeleted\": false\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create second user",
+			"request": {
+				"url": "http://localhost:3000/users/create",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"user2\",\n\t\"login\": \"loginUser2\",\n\t\"password\": \"passwordUser1\",\n\t\"age\": 20,\n\t\"isDeleted\": false\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create user with existing id",
+			"request": {
+				"url": "http://localhost:3000/users/create",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"user2\",\n\t\"login\": \"loginUserasd2\",\n\t\"password\": \"passwordUser1\",\n\t\"age\": 20,\n\t\"isDeleted\": false\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create user with existing login",
+			"request": {
+				"url": "http://localhost:3000/users/create",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"userasdfwqerqw\",\n\t\"login\": \"loginUser2\",\n\t\"password\": \"passwordUser1\",\n\t\"age\": 20,\n\t\"isDeleted\": false\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create invalid user",
+			"request": {
+				"url": "http://localhost:3000/users/create",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"\",\n\t\"login\": \"\",\n\t\"password\": \"\",\n\t\"age\": 0,\n\t\"isDeleted\": \"asd\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get existing user",
+			"request": {
+				"url": "http://localhost:3000/users/user/user1",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get non-existing user",
+			"request": {
+				"url": "http://localhost:3000/users/user/userasdfwer",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get suggested users",
+			"request": {
+				"url": "http://localhost:3000/users/autoSuggest",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"loginPart\": \"login\",\n\t\"limit\": 5\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get suggested users with invalid params",
+			"request": {
+				"url": "http://localhost:3000/users/autoSuggest",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"loginPart\": \"\",\n\t\"limit\": -1\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Update user",
+			"request": {
+				"url": "http://localhost:3000/users/user/user1",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"zxc\",\n\t\"login\": \"zxcasdqwe\",\n\t\"password\": \"asd12345qwertTT\",\n\t\"age\": 30,\n\t\"isDeleted\": false\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Update user with invalid params",
+			"request": {
+				"url": "http://localhost:3000/users/user/user1",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"\",\n\t\"login\": \"\",\n\t\"password\": \"\",\n\t\"age\": 0,\n\t\"isDeleted\": \"false\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Update user with existing login",
+			"request": {
+				"url": "http://localhost:3000/users/user/user1",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"zxc\",\n\t\"login\": \"loginUser2\",\n\t\"password\": \"asd12345qwertTT\",\n\t\"age\": 30,\n\t\"isDeleted\": false\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete user",
+			"request": {
+				"url": "http://localhost:3000/users/user/user1",
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
