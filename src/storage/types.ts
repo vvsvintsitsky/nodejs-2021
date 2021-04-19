@@ -1,13 +1,13 @@
 import { User } from '../model/User';
 
 export interface UserStorage {
-  getById(id: string): User | undefined;
+  getById(id: string): Promise<User | undefined>;
 
-  update(id: string, user: User): void;
+  update(id: string, user: User): Promise<void>;
 
-  create(user: User): void;
+  create(user: User): Promise<void>;
 
-  getAutoSuggestUsers(loginSubstring: string, limit: number): User[];
+  getAutoSuggestUsers(loginSubstring: string, limit: number): Promise<User[]>;
 
-  markAsDeleted(id: string): void;
+  markAsDeleted(id: string): Promise<void>;
 }

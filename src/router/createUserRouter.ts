@@ -1,8 +1,9 @@
 import { Router } from 'express';
+import { ConflictDataRequestError } from '../error/ConflictDataRequestError';
 
 import { CustomRequestError } from '../error/CustomRequestError';
-import { EntityAlreadyExistsError } from '../error/EntityAlreadyExistsError';
 import { EntityNotFoundError } from '../error/EntityNotFoundError';
+import { UniqueConstraintViolationError } from '../error/UniqueConstraintViolationError';
 
 import { UserService } from '../service/UserService';
 import {
@@ -27,54 +28,63 @@ const userIdValidationMiddleware = createValidationMiddleware(
 export function createUserRouter(userService: UserService): Router {
     const router = Router();
 
-    router.get(USER_PATH, userIdValidationMiddleware, (req, res) => {
-        const user = userService.getById(req.params.id);
-
-        if (user) {
-            res.json(user);
-            return;
-        }
-
-        res.sendStatus(404);
-    });
-
-    router.delete(USER_PATH, userIdValidationMiddleware, (req, res) => {
-        userService.markAsDeleted(req.params.id);
-        res.sendStatus(200);
-    });
-
-    router.put(USER_PATH, userValidationMiddleware, (req, res, next) => {
+    router.get(USER_PATH, userIdValidationMiddleware, async (req, res, next) => {
         try {
-            userService.update(req.params.id, req.body);
+            res.json(await userService.getById(req.params.id));
+        } catch (error) {
+            if (error instanceof EntityNotFoundError) {
+                return next(new CustomRequestError(404, error.message));
+            }
+            return next(error);
+        }
+    });
+
+    router.delete(USER_PATH, userIdValidationMiddleware, async (req, res, next) => {
+        try {
+            await userService.markAsDeleted(req.params.id);
             res.sendStatus(200);
         } catch (error) {
-            const errorToThrow =
-        error instanceof EntityNotFoundError
-            ? new CustomRequestError(404, error.message)
-            : error;
-            return next(errorToThrow);
+            return next(error);
         }
     });
 
-    router.post('/create', userValidationMiddleware, (req, res, next) => {
+    router.put(USER_PATH, userValidationMiddleware, async (req, res, next) => {
         try {
-            userService.create(req.body);
+            await userService.update(req.params.id, req.body);
+            res.sendStatus(200);
+        } catch (error) {
+            if (error instanceof EntityNotFoundError) {
+                return next(new CustomRequestError(404, error.message));
+            }
+            if (error instanceof UniqueConstraintViolationError) {
+                return next(new ConflictDataRequestError());
+            }
+            return next(error);
+        }
+    });
+
+    router.post('/create', userValidationMiddleware, async (req, res, next) => {
+        try {
+            await userService.create(req.body);
             res.sendStatus(201);
         } catch (error) {
-            const errorToThrow =
-        error instanceof EntityAlreadyExistsError
-            ? new CustomRequestError(400, error.message)
-            : error;
-            return next(errorToThrow);
+            if (error instanceof UniqueConstraintViolationError) {
+                return next(new ConflictDataRequestError());
+            }
+            return next(error);
         }
     });
 
     router.post(
         '/autoSuggest',
         createValidationMiddleware(validateAutosuggest),
-        (req, res) => {
+        async (req, res, next) => {
             const { loginPart, limit } = req.body;
-            res.json(userService.getAutoSuggestUsers(loginPart, limit));
+            try {
+                res.json(await userService.getAutoSuggestUsers(loginPart, limit));
+            } catch (error) {
+                return next(error);
+            }
         }
     );
 

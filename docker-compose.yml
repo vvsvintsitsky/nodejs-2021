@@ -1,0 +1,24 @@
+version: '3.9'
+services:
+  api:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - ${API_PORT}:${API_PORT}
+    environment:
+      - PORT=${API_PORT}
+      - DATASOURCE_URL=postgresql://${DB_LOGIN}:${DB_PASSWORD}@db:5432/homework
+      - DB_CONNECTION_RETRY_COUNT=5
+      - DB_CONNECION_RETRY_INTERVAL=5000
+      - DB_CONNECION_POOL_MIN_SIZE=0
+      - DB_CONNECION_POOL_MAX_SIZE=4
+      - NODE_ENV=${NODE_ENV_MODE}
+  db:
+    build: ./db
+    ports:
+      - ${DB_PORT}:5432
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_LOGIN}
+      - POSTGRES_DB=homework
