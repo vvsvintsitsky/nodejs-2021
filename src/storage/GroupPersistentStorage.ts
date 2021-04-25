@@ -38,7 +38,7 @@ export class GroupPersistentStorage implements GroupStorage {
     }
 
     public async delete(id: string): Promise<void> {
-        await this.connection(TABLE_NAME).delete().where(id, { is_deleted: true });
+        await this.connection(TABLE_NAME).delete().where({ id });
     }
 
     public async update(
