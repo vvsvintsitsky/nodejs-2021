@@ -23,16 +23,31 @@ export async function testGroupApi(host: string, port?: number): Promise<void> {
     const getGroup = (id: string) =>
         sendRequestAndParseResponse({ path: `/groups/group/${id}`, method: 'GET' });
 
-    const mockGroups: Group[] = Array.from({ length: 3 }, (_, index) => {
-        const id = uuid();
-        return {
-            id,
-            name: `group_${index}_${id}`,
-            permissions: [Permission.READ]
-        };
+    const sortGroupsById = (groups: Group[]) =>
+        groups.concat().sort((left, right) => left.id.localeCompare(right.id));
+
+    const sortGroupPermissions = (group: Group): Group => ({
+        ...group,
+        permissions: group.permissions.concat().sort()
     });
 
-    await Promise.all(mockGroups.map(createGroup));
+    const mockGroups: Group[] = sortGroupsById(
+        Array.from({ length: 3 }, (_, index) => {
+            const id = uuid();
+            return {
+                id,
+                name: `group_${index}_${id}`,
+                permissions: [Permission.UPLOAD_FILES]
+            };
+        }).map(sortGroupPermissions)
+    );
+
+    const createGroupResponses = await Promise.all(mockGroups.map(createGroup));
+    assert.deepStrictEqual(
+        createGroupResponses.every((res) => res.statusCode === 201),
+        true,
+        'not all groups were created'
+    );
     assert.deepStrictEqual(
         await Promise.all(mockGroups.map((group) => getGroup(group.id))),
         mockGroups,
@@ -41,30 +56,36 @@ export async function testGroupApi(host: string, port?: number): Promise<void> {
 
     const [defaultGroup, ...restGroups] = mockGroups;
 
-    const updatedGroup: Group = {
+    const updatedGroup: Group = sortGroupPermissions({
         ...defaultGroup,
         name: `${defaultGroup.name}_updated`,
         permissions: [...defaultGroup.permissions, Permission.DELETE]
-    };
+    });
 
     await sendRequest({
-        path: `/groups/group/${defaultGroup.id}`,
+        path: `/groups/group/${updatedGroup.id}`,
         method: 'PUT',
         payload: updatedGroup
     });
+
+    const receivedUpdatedGroup = sortGroupPermissions(
+    (await getGroup(updatedGroup.id)) as Group
+    );
     assert.deepStrictEqual(
-        await getGroup(defaultGroup.id),
+        receivedUpdatedGroup,
         updatedGroup,
         'group was not updated properly'
     );
 
-    const allGroups = await sendRequestAndParseResponse({
+    const allGroups = sortGroupsById(
+    (await sendRequestAndParseResponse({
         path: '/groups/all',
         method: 'GET'
-    });
+    })) as Group[]
+    );
     assert.deepStrictEqual(
-        allGroups,
-        [updatedGroup, ...restGroups],
+        allGroups.map(sortGroupPermissions),
+        [receivedUpdatedGroup, ...restGroups],
         'not all groups were returned'
     );
 

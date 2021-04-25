@@ -34,7 +34,12 @@ export async function testUserApi(host: string, port?: number): Promise<void> {
     const [defaultUser, ...restUsers] = mockUsers;
     defaultUser.login = `login_${uuid()}`;
 
-    await Promise.all(mockUsers.map(createUser));
+    const createUserResponses = await Promise.all(mockUsers.map(createUser));
+    assert.strictEqual(
+        createUserResponses.every((res) => res.statusCode === 201),
+        true,
+        'not all users were created'
+    );
     assert.deepStrictEqual(
         await Promise.all(mockUsers.map((user) => getUser(user.id))),
         mockUsers,

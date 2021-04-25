@@ -17,8 +17,8 @@ export function testApi(runScenario: (host: string, port: number) => Promise<voi
     return runScenario(host, port);
 }
 
-(async function runScenarios() {
+((async function runScenarios() {
     for (const scenario of scenarios) {
         await testApi(scenario);
     }
-}());
+}()).catch(error => console.log(error)));
