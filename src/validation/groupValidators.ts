@@ -1,5 +1,3 @@
-import { Permission } from '../model/Permission';
-
 import { createSchemaValidator } from './createSchemaValidator';
 
 import { NOT_EMPTY_STRING_PATTERN, UUID_PATTERN } from './patterns';
@@ -10,10 +8,10 @@ export const validateGroup = createSchemaValidator({
         id: { type: 'string', pattern: UUID_PATTERN },
         name: { type: 'string', pattern: NOT_EMPTY_STRING_PATTERN },
         permissions: {
-            enum : Object.values(Permission)
+            type: 'array'
         }
     },
-    required: ['id', 'name', 'permission']
+    required: ['id', 'name', 'permissions']
 });
 
 export const validateGroupId = createSchemaValidator({
