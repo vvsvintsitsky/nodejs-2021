@@ -3,7 +3,7 @@ CREATE TABLE "users" (
 	"login" character varying(255) NOT NULL UNIQUE,
 	"password" character varying(255) NOT NULL,
 	"age" integer NOT NULL,
-	"isDeleted" BOOLEAN NOT NULL,
+	"is_deleted" BOOLEAN NOT NULL,
 	CONSTRAINT "users_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
