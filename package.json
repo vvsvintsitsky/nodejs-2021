@@ -9,7 +9,7 @@
     "build": "tsc --project ./",
     "start": "nodemon ./src/index.ts",
     "lint": "eslint ./ --ext ts --fix",
-    "e2e": "ts-node ./e2e/userApiTest.test.ts -p 3000 -h localhost",
+    "e2e": "ts-node ./e2e/runScenarios.test.ts -p 8080 -h localhost",
     "env:build": "npm run build && docker-compose build",
     "env:up": "docker-compose up -d",
     "env:down": "docker-compose down",

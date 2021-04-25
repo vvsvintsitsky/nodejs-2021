@@ -22,16 +22,17 @@ export async function testUserApi(host: string, port?: number): Promise<void> {
     const getUser = (id: string) =>
         sendRequestAndParseResponse({ path: `/users/user/${id}`, method: 'GET' });
 
-    const mockUsers: User[] = Array.from({ length: 3 }, () => ({
+    const loginPostfix = uuid();
+    const mockUsers: User[] = Array.from({ length: 3 }, (_, index) => ({
         id: uuid(),
         age: 4,
         isDeleted: false,
-        login: 'autoSuggest',
+        login: `login_${index}_${loginPostfix}`,
         password: 'a3aXsdq111zXX'
     }));
 
     const [defaultUser, ...restUsers] = mockUsers;
-    defaultUser.login = 'xxx';
+    defaultUser.login = `login_${uuid()}`;
 
     await Promise.all(mockUsers.map(createUser));
     assert.deepStrictEqual(
@@ -58,7 +59,7 @@ export async function testUserApi(host: string, port?: number): Promise<void> {
     const suggestedUsers = await sendRequestAndParseResponse({
         path: '/users/autoSuggest',
         method: 'POST',
-        payload: { limit: 10, loginPart: restUsers[0].login.substr(0, 2) }
+        payload: { limit: 10, loginPart: loginPostfix }
     });
     assert.deepStrictEqual(
         suggestedUsers,
