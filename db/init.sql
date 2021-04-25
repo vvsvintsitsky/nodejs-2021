@@ -12,7 +12,7 @@ CREATE TABLE "users" (
 CREATE TABLE "groups" (
 	"id" uuid NOT NULL,
 	"name" character varying(255) NOT NULL UNIQUE,
-	"permissions" bit(32) NOT NULL,
+	"permissions" integer NOT NULL,
 	CONSTRAINT "groups_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
