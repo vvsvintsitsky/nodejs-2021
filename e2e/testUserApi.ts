@@ -1,5 +1,7 @@
 import assert from 'assert';
 
+import { v4 as uuid } from 'uuid';
+
 import { setupRequests } from './util';
 
 import { User } from '../src/model/User';
@@ -20,8 +22,8 @@ export async function testUserApi(host: string, port?: number): Promise<void> {
     const getUser = (id: string) =>
         sendRequestAndParseResponse({ path: `/users/user/${id}`, method: 'GET' });
 
-    const mockUsers: User[] = Array.from({ length: 3 }, (_: unknown, index) => ({
-        id: `${index}`,
+    const mockUsers: User[] = Array.from({ length: 3 }, () => ({
+        id: uuid(),
         age: 4,
         isDeleted: false,
         login: 'autoSuggest',

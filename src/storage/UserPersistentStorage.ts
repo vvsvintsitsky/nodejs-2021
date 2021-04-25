@@ -3,12 +3,13 @@ import { Knex } from 'knex';
 import { DataMapper } from '../data-mapper/types';
 import { EntityNotFoundError } from '../error/EntityNotFoundError';
 import { User } from '../model/User';
-import { PersistentUser } from './PersistenceUser';
+import { PersistentUser } from './PersistentUser';
 import { StorageErrorParser } from './StorageErrorParser';
 
-import { UserStorage } from './types';
+import { UserStorage } from './UserStorage';
 
 const TABLE_NAME = 'users';
+
 export class UserPersistentStorage implements UserStorage {
     constructor(
         private connection: Knex,
@@ -16,7 +17,7 @@ export class UserPersistentStorage implements UserStorage {
         private storageErrorParser: StorageErrorParser
     ) {}
 
-    public async getById(id: string): Promise<User | undefined> {
+    public async getById(id: string): Promise<User> {
         const users = await this.connection(TABLE_NAME).select().where(
             this.getActiveUserPredicate({ id })
         );

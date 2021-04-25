@@ -1,7 +1,7 @@
 import { User } from '../model/User';
 
 export interface UserStorage {
-  getById(id: string): Promise<User | undefined>;
+  getById(id: string): Promise<User>;
 
   update(id: string, user: User): Promise<void>;
 
