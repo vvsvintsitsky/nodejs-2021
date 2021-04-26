@@ -28,7 +28,7 @@ CREATE TABLE "user_group" (
 
 
 ALTER TABLE "user_group" ADD CONSTRAINT "user_group_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
-ALTER TABLE "user_group" ADD CONSTRAINT "user_group_fk1" FOREIGN KEY ("group_id") REFERENCES "groups"("id");
+ALTER TABLE "user_group" ADD CONSTRAINT "user_group_fk1" FOREIGN KEY ("group_id") REFERENCES "groups"("id") ON DELETE CASCADE;
 
 
 
