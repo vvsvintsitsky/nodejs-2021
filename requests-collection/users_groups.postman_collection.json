@@ -1,0 +1,661 @@
+{
+	"info": {
+		"_postman_id": "b040dc90-5c59-4b64-89d8-42a7f69d349d",
+		"name": "users_groups",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create first user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"d6bd9686-e952-48a8-986d-1738135426a6\",\n\t\"login\": \"loginUser1\",\n\t\"password\": \"passwordUser1\",\n\t\"age\": 20,\n\t\"isDeleted\": false\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create second user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"cb936d8d-2294-4ad2-96ee-205df9f51d20\",\n\t\"login\": \"loginUser2\",\n\t\"password\": \"passwordUser1\",\n\t\"age\": 20,\n\t\"isDeleted\": false\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user with existing id",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"cb936d8d-2294-4ad2-96ee-205df9f51d20\",\n\t\"login\": \"loginUserasd2\",\n\t\"password\": \"passwordUser1\",\n\t\"age\": 20,\n\t\"isDeleted\": false\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user with existing login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"a403c6cb-55c2-40d3-a0b9-3ca4ad3e324b\",\n\t\"login\": \"loginUser2\",\n\t\"password\": \"passwordUser1\",\n\t\"age\": 20,\n\t\"isDeleted\": false\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create invalid user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"\",\n\t\"login\": \"\",\n\t\"password\": \"\",\n\t\"age\": 0,\n\t\"isDeleted\": \"asd\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get existing user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/user/d6bd9686-e952-48a8-986d-1738135426a6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"user",
+						"d6bd9686-e952-48a8-986d-1738135426a6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get non-existing user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/user/a403c6cb-55c2-40d3-a0b9-3ca4ad3e324b",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"user",
+						"a403c6cb-55c2-40d3-a0b9-3ca4ad3e324b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get suggested users",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"loginPart\": \"login\",\n\t\"limit\": 5\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/autoSuggest",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"autoSuggest"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get suggested users with invalid params",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"loginPart\": \"\",\n\t\"limit\": -1\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/autoSuggest",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"autoSuggest"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update user",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"d6bd9686-e952-48a8-986d-1738135426a6\",\n\t\"login\": \"zxcasdqwe\",\n\t\"password\": \"asd12345qwertTT\",\n\t\"age\": 30,\n\t\"isDeleted\": false\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/user/d6bd9686-e952-48a8-986d-1738135426a6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"user",
+						"d6bd9686-e952-48a8-986d-1738135426a6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update user with invalid params",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"\",\n\t\"login\": \"\",\n\t\"password\": \"\",\n\t\"age\": 0,\n\t\"isDeleted\": \"false\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/user/d6bd9686-e952-48a8-986d-1738135426a6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"user",
+						"d6bd9686-e952-48a8-986d-1738135426a6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update user with existing login",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"d6bd9686-e952-48a8-986d-1738135426a6\",\n\t\"login\": \"loginUser2\",\n\t\"password\": \"asd12345qwertTT\",\n\t\"age\": 30,\n\t\"isDeleted\": false\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/user/d6bd9686-e952-48a8-986d-1738135426a6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"user",
+						"d6bd9686-e952-48a8-986d-1738135426a6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete user",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/user/d6bd9686-e952-48a8-986d-1738135426a6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"user",
+						"d6bd9686-e952-48a8-986d-1738135426a6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create group",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"b91b78a0-2acf-421f-aa55-a8ff637b902e\",\r\n    \"name\": \"name_1\",\r\n    \"permissions\": [\"READ\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/groups/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"groups",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create another group",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"5651b069-55fd-461b-8a77-52f8f06d8c66\",\r\n    \"name\": \"name_2\",\r\n    \"permissions\": [\"READ\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/groups/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"groups",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create invalid group",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"\",\r\n    \"name\": \"\",\r\n    \"permissions\": [\"EAD\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/groups/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"groups",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create group with existing id",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"376c5fa7-d30e-40a0-8ad1-208d4b1ff503\",\r\n    \"name\": \"name_2\",\r\n    \"permissions\": [\"READ\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/groups/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"groups",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create group with existing name",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"5651b069-55fd-461b-8a77-52f8f06d8c66\",\r\n    \"name\": \"name_2_zxc\",\r\n    \"permissions\": [\"READ\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/groups/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"groups",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get group",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/groups/group/b91b78a0-2acf-421f-aa55-a8ff637b902e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"groups",
+						"group",
+						"b91b78a0-2acf-421f-aa55-a8ff637b902e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all groups",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/groups/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"groups",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update group",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"b91b78a0-2acf-421f-aa55-a8ff637b902e\",\r\n    \"name\": \"name_1_updated\",\r\n    \"permissions\": [\"READ\", \"DELETE\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/groups/group/b91b78a0-2acf-421f-aa55-a8ff637b902e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"groups",
+						"group",
+						"b91b78a0-2acf-421f-aa55-a8ff637b902e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update group with invalid params",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"\",\r\n    \"name\": \"\",\r\n    \"permissions\": [\"EAD\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/groups/group/b91b78a0-2acf-421f-aa55-a8ff637b902e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"groups",
+						"group",
+						"b91b78a0-2acf-421f-aa55-a8ff637b902e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add users to group",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"groupId\": \"b91b78a0-2acf-421f-aa55-a8ff637b902e\",\r\n    \"userIds\": [\r\n        \"cb936d8d-2294-4ad2-96ee-205df9f51d20\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/groups/addUsers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"groups",
+						"addUsers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete group",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/groups/group/b91b78a0-2acf-421f-aa55-a8ff637b902e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"groups",
+						"group",
+						"b91b78a0-2acf-421f-aa55-a8ff637b902e"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
