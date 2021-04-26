@@ -59,9 +59,12 @@ export class GroupPersistentStorage implements GroupStorage {
 
     public async addUsersToGroup(groupId: string, userIds: string[]): Promise<void> {
         const rows = userIds.map(user_id => ({ user_id, group_id: groupId }));
-        await this.storageErrorParser.performUpdateOperation(() =>
-            this.connection(USER_GROUP_TABLE_NAME).insert(rows)
-        );
+
+        await this.connection.transaction(async trx => {
+            await this.storageErrorParser.performUpdateOperation(() =>
+                trx(USER_GROUP_TABLE_NAME).insert(rows)
+            );
+        });
     }
 
     private assertUniqueUserOperationResult(id: string, entriesCount: number) {

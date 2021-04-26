@@ -74,7 +74,7 @@ interface RequestSenderAndParser<T = unknown> {
     (args: StrippedRequestARgs): Promise<T>
 }
 
-interface RequestUtils {
+export interface RequestUtils {
     sendRequest: RequestSender;
     sendRequestAndParseResponse: RequestSenderAndParser;
 }

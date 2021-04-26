@@ -2,16 +2,20 @@ import assert from 'assert';
 
 import { v4 as uuid } from 'uuid';
 
-import { setupRequests } from './util';
+import { RequestUtils } from './util';
 
 import { User } from '../src/model/User';
+import { createUsers } from './mockDataUtils';
 
-export async function testUserApi(host: string, port?: number): Promise<void> {
-    const { sendRequest, sendRequestAndParseResponse } = setupRequests(
-        host,
-        port
-    );
+const mockUsers = createUsers(3);
 
+const [defaultUser, ...restUsers] = mockUsers;
+defaultUser.login = `login_${uuid()}`;
+
+export async function testUserApi({
+    sendRequest,
+    sendRequestAndParseResponse
+}: RequestUtils): Promise<void> {
     const createUser = (user: User) =>
         sendRequest({
             path: '/users/create',
@@ -21,18 +25,6 @@ export async function testUserApi(host: string, port?: number): Promise<void> {
 
     const getUser = (id: string) =>
         sendRequestAndParseResponse({ path: `/users/user/${id}`, method: 'GET' });
-
-    const loginPostfix = uuid();
-    const mockUsers: User[] = Array.from({ length: 3 }, (_, index) => ({
-        id: uuid(),
-        age: 4,
-        isDeleted: false,
-        login: `login_${index}_${loginPostfix}`,
-        password: 'a3aXsdq111zXX'
-    }));
-
-    const [defaultUser, ...restUsers] = mockUsers;
-    defaultUser.login = `login_${uuid()}`;
 
     const createUserResponses = await Promise.all(mockUsers.map(createUser));
     assert.strictEqual(
@@ -64,7 +56,7 @@ export async function testUserApi(host: string, port?: number): Promise<void> {
     const suggestedUsers = await sendRequestAndParseResponse({
         path: '/users/autoSuggest',
         method: 'POST',
-        payload: { limit: 10, loginPart: loginPostfix }
+        payload: { limit: 10, loginPart: restUsers[0].login.substr(10, 15) }
     });
     assert.deepStrictEqual(
         suggestedUsers,

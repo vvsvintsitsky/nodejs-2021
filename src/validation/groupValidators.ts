@@ -40,5 +40,5 @@ export const validateGroupIdAndUserIds = createSchemaValidator({
             minItems: 1
         }
     },
-    required: ['groupId, userIds']
+    required: ['groupId', 'userIds']
 });

@@ -1,18 +1,31 @@
 import assert from 'assert';
 
-import { v4 as uuid } from 'uuid';
-
-import { setupRequests } from './util';
-
 import { Permission } from '../src/model/Permission';
 import { Group } from '../src/model/Group';
+import { User } from '../src/model/User';
 
-export async function testGroupApi(host: string, port?: number): Promise<void> {
-    const { sendRequest, sendRequestAndParseResponse } = setupRequests(
-        host,
-        port
-    );
+import { RequestUtils } from './util';
 
+import { createGroups, createUsers } from './mockDataUtils';
+
+const sortGroupsById = (groups: Group[]) =>
+    groups.concat().sort((left, right) => left.id.localeCompare(right.id));
+
+const sortGroupPermissions = (group: Group): Group => ({
+    ...group,
+    permissions: group.permissions.concat().sort()
+});
+
+const mockGroups = sortGroupsById(
+    createGroups(3).map(sortGroupPermissions)
+);
+
+const mockUsers = createUsers(2);
+
+export async function testGroupApi({
+    sendRequest,
+    sendRequestAndParseResponse
+}: RequestUtils): Promise<void> {
     const createGroup = (group: Group) =>
         sendRequest({
             path: '/groups/create',
@@ -22,25 +35,6 @@ export async function testGroupApi(host: string, port?: number): Promise<void> {
 
     const getGroup = (id: string) =>
         sendRequestAndParseResponse({ path: `/groups/group/${id}`, method: 'GET' });
-
-    const sortGroupsById = (groups: Group[]) =>
-        groups.concat().sort((left, right) => left.id.localeCompare(right.id));
-
-    const sortGroupPermissions = (group: Group): Group => ({
-        ...group,
-        permissions: group.permissions.concat().sort()
-    });
-
-    const mockGroups: Group[] = sortGroupsById(
-        Array.from({ length: 3 }, (_, index) => {
-            const id = uuid();
-            return {
-                id,
-                name: `group_${index}_${id}`,
-                permissions: [Permission.UPLOAD_FILES]
-            };
-        }).map(sortGroupPermissions)
-    );
 
     const createGroupResponses = await Promise.all(mockGroups.map(createGroup));
     assert.deepStrictEqual(
@@ -93,10 +87,27 @@ export async function testGroupApi(host: string, port?: number): Promise<void> {
         path: `/groups/group/${defaultGroup.id}`,
         method: 'DELETE'
     });
-    assert.strictEqual(deleteResponse.statusCode, 200);
-    const response = await sendRequest({
+    assert.strictEqual(deleteResponse.statusCode, 200, 'group was not deleted');
+    const getGroupResponse = await sendRequest({
         path: `/groups/group/${defaultGroup.id}`,
         method: 'GET'
     });
-    assert.strictEqual(response.statusCode, 404, 'group was not deleted');
+    assert.strictEqual(getGroupResponse.statusCode, 404, 'deleted group was found');
+
+    const createUser = (user: User) =>
+        sendRequest({
+            path: '/users/create',
+            method: 'POST',
+            payload: user
+        });
+    await Promise.all(mockUsers.map(createUser));
+
+    assert.strictEqual((await sendRequest({
+        path: '/groups/addUsers',
+        method: 'POST',
+        payload: {
+            groupId: restGroups[0].id,
+            userIds: mockUsers.map(user => user.id)
+        }
+    })).statusCode, 201, 'users were not added to group');
 }
