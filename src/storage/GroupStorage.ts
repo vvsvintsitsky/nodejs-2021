@@ -10,4 +10,6 @@ export interface GroupStorage {
   create(group: Group): Promise<void>;
 
   delete(id: string): Promise<void>;
+
+  addUsersToGroup(groupId: string, userIds: string[]): Promise<void>;
 }

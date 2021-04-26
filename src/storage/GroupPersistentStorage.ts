@@ -9,6 +9,7 @@ import { StorageErrorParser } from './StorageErrorParser';
 import { GroupStorage } from './GroupStorage';
 
 const TABLE_NAME = 'groups';
+const USER_GROUP_TABLE_NAME = 'user_group';
 
 export class GroupPersistentStorage implements GroupStorage {
     constructor(
@@ -54,6 +55,13 @@ export class GroupPersistentStorage implements GroupStorage {
         );
 
         this.assertUniqueUserOperationResult(groupId, updatedEntriesCount);
+    }
+
+    public async addUsersToGroup(groupId: string, userIds: string[]): Promise<void> {
+        const rows = userIds.map(user_id => ({ user_id, group_id: groupId }));
+        await this.storageErrorParser.performUpdateOperation(() =>
+            this.connection(USER_GROUP_TABLE_NAME).insert(rows)
+        );
     }
 
     private assertUniqueUserOperationResult(id: string, entriesCount: number) {

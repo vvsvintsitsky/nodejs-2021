@@ -23,4 +23,8 @@ export class GroupService {
     public delete(id: string): Promise<void> {
         return this.groupStorage.delete(id);
     }
+
+    public addUsersToGroup(groupId: string, userIds: string[]): Promise<void> {
+        return this.groupStorage.addUsersToGroup(groupId, userIds);
+    }
 }
