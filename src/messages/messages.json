@@ -1,0 +1,5 @@
+{
+  "conflictData": "This record conflicts with data in the database",
+  "wrongInput": "Wrong input data",
+  "unhandledError": "An unknown error occured"
+}

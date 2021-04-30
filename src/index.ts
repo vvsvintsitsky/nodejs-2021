@@ -1,3 +1,5 @@
+import path from 'path';
+
 import knex from 'knex';
 
 import { UserDataMapper } from './data-mapper/UserDataMapper';
@@ -10,6 +12,11 @@ import { PORT, POOL_MIN_SIZE, POOL_MAX_SIZE } from './config';
 
 import { createApplication } from './createApplication';
 import { PostgresStorageErrorParser } from './storage/PostgresStorageErrorParser';
+import { createLogger } from './logger/createLogger';
+import { RequestLogger } from './logger/RequestLogger';
+import { TranslationDictionary } from './translation/TranslationDictionary';
+
+import messages from './messages/messages.json';
 
 const port = process.env.PORT || PORT;
 
@@ -24,6 +31,11 @@ const connection = knex({
     pool: { min: poolMinSize, max: poolMaxSize }
 });
 
+const logger = createLogger(
+    path.join(process.cwd(), 'logs', 'application-%DATE%.log')
+);
+const requestLogger = new RequestLogger(logger);
+
 (async () => {
     try {
         await retryAction(
@@ -33,19 +45,24 @@ const connection = knex({
             Number(process.env.DB_CONNECION_RETRY_INTERVAL)
         );
     } catch (error) {
-        console.log(error);
+        logger.error(error);
         return;
     }
 
-    console.log('connection established');
+    logger.info('connection established');
 
-    createApplication(
-        new UserService(
+    createApplication({
+        userService: new UserService(
             new UserPersistentStorage(
                 connection,
                 new UserDataMapper(),
                 new PostgresStorageErrorParser()
             )
-        )
-    ).listen(port, () => console.log(`server has started ${port}`));
+        ),
+        context: {
+            logger,
+            translationDictionary: new TranslationDictionary(messages),
+            requestLogger
+        }
+    }).listen(port, () => logger.info(`server has started ${port}`));
 })();

@@ -14,7 +14,8 @@
     "env:up": "docker-compose up -d",
     "env:down": "docker-compose down",
     "env:start": "docker-compose start -d",
-    "env:stop": "docker-compose stop"
+    "env:stop": "docker-compose stop",
+    "testlog": "ts-node ./src/logger/createLogger.ts"
   },
   "repository": {
     "type": "git",
@@ -42,6 +43,8 @@
     "csvtojson": "2.0.10",
     "express": "4.17.1",
     "knex": "0.95.4",
-    "pg": "8.5.1"
+    "pg": "8.5.1",
+    "winston": "3.3.3",
+    "winston-daily-rotate-file": "4.5.2"
   }
 }
