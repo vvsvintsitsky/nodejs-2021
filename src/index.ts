@@ -50,7 +50,7 @@ const requestLogger = new RequestLogger(logger);
             Number(process.env.DB_CONNECION_RETRY_INTERVAL)
         );
     } catch (error) {
-        logger.error(error);
+        logger.error(error.message);
         return;
     }
 
@@ -60,7 +60,6 @@ const requestLogger = new RequestLogger(logger);
 
     createApplication({
         context: {
-            logger,
             translationDictionary: new TranslationDictionary(messages),
             requestLogger
         },

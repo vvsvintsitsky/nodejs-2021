@@ -23,7 +23,7 @@ export function extractDataFromParams<T extends RequestPayload>(
 export function createValidationMiddleware<T extends RequestPayload>({
     validate,
     extractDataToValidate = extractDataFromBody,
-    context: { requestLogger, translationDictionary }
+    context: { requestLogger }
 }: {
   validate: Validator<T>;
   extractDataToValidate?: DataExtractor<T>;
@@ -45,7 +45,7 @@ export function createValidationMiddleware<T extends RequestPayload>({
             return next();
         }
 
-        requestLogger.warn(translationDictionary.getTranslation('wrongInput'), req);
+        requestLogger.warn('Wrong request input', req);
 
         res.status(400).json(errors);
     };

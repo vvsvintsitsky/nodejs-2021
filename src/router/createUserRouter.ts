@@ -46,7 +46,7 @@ export function createUserRouter(
                 return next(error);
             }
 
-            logger.warn(error.message, { error });
+            logger.warn(error.message, req);
             res.status(404).json(error.message);
         }
     });
@@ -72,14 +72,12 @@ export function createUserRouter(
             res.sendStatus(200);
         } catch (error) {
             if (error instanceof EntityNotFoundError) {
-                logger.warn(error.message, { error });
+                logger.warn(error.message, req);
                 res.status(404).json(error.message);
                 return;
             }
             if (error instanceof UniqueConstraintViolationError) {
-                logger.warn(error.message, {
-                    error
-                });
+                logger.warn(error.message, req);
                 res.status(422).json(translationDictionary.getTranslation('conflictData'));
                 return;
             }
@@ -93,9 +91,7 @@ export function createUserRouter(
             res.sendStatus(201);
         } catch (error) {
             if (error instanceof UniqueConstraintViolationError) {
-                logger.warn(error.message, {
-                    error
-                });
+                logger.warn(error.message, req);
                 res.status(422).json(translationDictionary.getTranslation('conflictData'));
                 return;
             }

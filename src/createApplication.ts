@@ -21,5 +21,5 @@ export function createApplication({
         .use(express.json())
         .use(createErrorHandlerMiddleware(context))
         .use('/users', createUserRouter(userService, context))
-        .use('/groups', createGroupRouter(groupService));
+        .use('/groups', createGroupRouter(groupService, context));
 }
