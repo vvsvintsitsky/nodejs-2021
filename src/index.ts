@@ -75,3 +75,9 @@ const requestLogger = new RequestLogger(logger);
         )
     }).listen(port, () => logger.info(`server has started ${port}`));
 })();
+
+function logUncaughtError(error: Error) {
+    logger.error(error.message, { ...error });
+}
+process.on('uncaughtException', logUncaughtError);
+process.on('unhandledRejection', logUncaughtError);
