@@ -1,4 +1,5 @@
 import { request, IncomingMessage, Server } from 'http';
+
 import { Express } from 'express';
 
 export function parseResponse(res: IncomingMessage): Promise<string> {
@@ -73,7 +74,7 @@ interface RequestSenderAndParser<T = unknown> {
     (args: StrippedRequestARgs): Promise<T>
 }
 
-interface RequestUtils {
+export interface RequestUtils {
     sendRequest: RequestSender;
     sendRequestAndParseResponse: RequestSenderAndParser;
 }
@@ -85,7 +86,6 @@ export function setupRequests(host: string, port?: number): RequestUtils {
         sendRequestAndParseResponse: args => sendRequest(args).then(parseResponse)
     };
 }
-
 
 interface ServerHandle {
   server?: Server;

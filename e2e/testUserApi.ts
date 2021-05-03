@@ -1,15 +1,21 @@
 import assert from 'assert';
 
-import { setupRequests } from './util';
+import { v4 as uuid } from 'uuid';
+
+import { RequestUtils } from './util';
 
 import { User } from '../src/model/User';
+import { createUsers } from './mockDataUtils';
 
-export async function testUserApi(host: string, port?: number): Promise<void> {
-    const { sendRequest, sendRequestAndParseResponse } = setupRequests(
-        host,
-        port
-    );
+const mockUsers = createUsers(3);
 
+const [defaultUser, ...restUsers] = mockUsers;
+defaultUser.login = `login_${uuid()}`;
+
+export async function testUserApi({
+    sendRequest,
+    sendRequestAndParseResponse
+}: RequestUtils): Promise<void> {
     const createUser = (user: User) =>
         sendRequest({
             path: '/users/create',
@@ -20,18 +26,12 @@ export async function testUserApi(host: string, port?: number): Promise<void> {
     const getUser = (id: string) =>
         sendRequestAndParseResponse({ path: `/users/user/${id}`, method: 'GET' });
 
-    const mockUsers: User[] = Array.from({ length: 3 }, (_: unknown, index) => ({
-        id: `${index}`,
-        age: 4,
-        isDeleted: false,
-        login: 'autoSuggest',
-        password: 'a3aXsdq111zXX'
-    }));
-
-    const [defaultUser, ...restUsers] = mockUsers;
-    defaultUser.login = 'xxx';
-
-    await Promise.all(mockUsers.map(createUser));
+    const createUserResponses = await Promise.all(mockUsers.map(createUser));
+    assert.strictEqual(
+        createUserResponses.every((res) => res.statusCode === 201),
+        true,
+        'not all users were created'
+    );
     assert.deepStrictEqual(
         await Promise.all(mockUsers.map((user) => getUser(user.id))),
         mockUsers,
@@ -56,7 +56,7 @@ export async function testUserApi(host: string, port?: number): Promise<void> {
     const suggestedUsers = await sendRequestAndParseResponse({
         path: '/users/autoSuggest',
         method: 'POST',
-        payload: { limit: 10, loginPart: restUsers[0].login.substr(0, 2) }
+        payload: { limit: 10, loginPart: restUsers[0].login.substr(10, 15) }
     });
     assert.deepStrictEqual(
         suggestedUsers,

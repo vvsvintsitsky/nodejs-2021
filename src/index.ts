@@ -3,8 +3,13 @@ import path from 'path';
 import knex from 'knex';
 
 import { UserDataMapper } from './data-mapper/UserDataMapper';
+import { GroupDataMapper } from './data-mapper/GroupDataMapper';
+
 import { UserPersistentStorage } from './storage/UserPersistentStorage';
+import { GroupPersistentStorage } from './storage/GroupPersistentStorage';
+
 import { UserService } from './service/UserService';
+import { GroupService } from './service/GroupService';
 
 import { retryAction } from './utils/retryAction';
 
@@ -51,18 +56,23 @@ const requestLogger = new RequestLogger(logger);
 
     logger.info('connection established');
 
+    const dbErrorMapper = new PostgresStorageErrorParser();
+
     createApplication({
-        userService: new UserService(
-            new UserPersistentStorage(
-                connection,
-                new UserDataMapper(),
-                new PostgresStorageErrorParser()
-            )
-        ),
         context: {
             logger,
             translationDictionary: new TranslationDictionary(messages),
             requestLogger
-        }
+        },
+        userService: new UserService(
+            new UserPersistentStorage(connection, new UserDataMapper(), dbErrorMapper)
+        ),
+        groupService: new GroupService(
+            new GroupPersistentStorage(
+                connection,
+                new GroupDataMapper(),
+                dbErrorMapper
+            )
+        )
     }).listen(port, () => logger.info(`server has started ${port}`));
 })();

@@ -1,10 +1,10 @@
 import { User } from '../model/User';
-import { UserStorage } from '../storage/types';
+import { UserStorage } from '../storage/UserStorage';
 
 export class UserService {
     constructor(private userStorage: UserStorage) {}
 
-    public getById(id: string): Promise<User | undefined> {
+    public getById(id: string): Promise<User> {
         return this.userStorage.getById(id);
     }
 
