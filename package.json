@@ -14,8 +14,7 @@
     "env:up": "docker-compose up -d",
     "env:down": "docker-compose down",
     "env:start": "docker-compose start -d",
-    "env:stop": "docker-compose stop",
-    "testlog": "ts-node ./src/logger/createLogger.ts"
+    "env:stop": "docker-compose stop"
   },
   "repository": {
     "type": "git",
