@@ -1,8 +1,13 @@
 import knex from 'knex';
 
 import { UserDataMapper } from './data-mapper/UserDataMapper';
+import { GroupDataMapper } from './data-mapper/GroupDataMapper';
+
 import { UserPersistentStorage } from './storage/UserPersistentStorage';
+import { GroupPersistentStorage } from './storage/GroupPersistentStorage';
+
 import { UserService } from './service/UserService';
+import { GroupService } from './service/GroupService';
 
 import { retryAction } from './utils/retryAction';
 
@@ -39,12 +44,17 @@ const connection = knex({
 
     console.log('connection established');
 
+    const dbErrorMapper = new PostgresStorageErrorParser();
+
     createApplication(
         new UserService(
-            new UserPersistentStorage(
+            new UserPersistentStorage(connection, new UserDataMapper(), dbErrorMapper)
+        ),
+        new GroupService(
+            new GroupPersistentStorage(
                 connection,
-                new UserDataMapper(),
-                new PostgresStorageErrorParser()
+                new GroupDataMapper(),
+                dbErrorMapper
             )
         )
     ).listen(port, () => console.log(`server has started ${port}`));

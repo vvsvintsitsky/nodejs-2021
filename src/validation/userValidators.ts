@@ -1,11 +1,11 @@
 import { createSchemaValidator } from './createSchemaValidator';
 
-const NOT_EMPTY_STRING_PATTERN = '^(?!s*$).+';
+import { NOT_EMPTY_STRING_PATTERN, UUID_PATTERN } from './patterns';
 
 export const validateUser = createSchemaValidator({
     type: 'object',
     properties: {
-        id: { type: 'string', pattern: NOT_EMPTY_STRING_PATTERN },
+        id: { type: 'string', pattern: UUID_PATTERN },
         login: { type: 'string', pattern: NOT_EMPTY_STRING_PATTERN },
         password: {
             type: 'string',
@@ -20,7 +20,7 @@ export const validateUser = createSchemaValidator({
 export const validateUserId = createSchemaValidator({
     type: 'object',
     properties: {
-        id: { type: 'string', pattern: NOT_EMPTY_STRING_PATTERN }
+        id: { type: 'string', pattern: UUID_PATTERN }
     },
     required: ['id']
 });
