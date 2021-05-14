@@ -4,7 +4,7 @@ import { Context } from '../context/Context';
 
 export function createRequestLoggingMiddleware(
     { requestLogger }: Context) {
-    return function schemaValidationMiddleware(
+    return function requestLoggingMiddleware(
         req: Request,
         _: Response,
         next: NextFunction

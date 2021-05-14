@@ -7,6 +7,7 @@ import { createUserRouter } from './router/createUserRouter';
 import { createGroupRouter } from './router/createGroupRouter';
 import { createErrorHandlerMiddleware } from './error/errorHandlerMiddleware';
 import { createRequestLoggingMiddleware } from './logger/createRequestLoggingMiddleware';
+import { withRequestExecutionTimeLog } from './logger/withRequestExecutionTimeLog';
 import { Context } from './context/Context';
 
 export function createApplication({
@@ -20,7 +21,7 @@ export function createApplication({
 }): Express {
     return express()
         .use(express.json())
-        .use(createRequestLoggingMiddleware(context))
+        .use(withRequestExecutionTimeLog(createRequestLoggingMiddleware)(context))
         .use(createErrorHandlerMiddleware(context))
         .use('/users', createUserRouter(userService, context))
         .use('/groups', createGroupRouter(groupService, context));
