@@ -1,3 +1,5 @@
+import path from 'path';
+
 import knex from 'knex';
 
 import { UserDataMapper } from './data-mapper/UserDataMapper';
@@ -15,6 +17,11 @@ import { PORT, POOL_MIN_SIZE, POOL_MAX_SIZE } from './config';
 
 import { createApplication } from './createApplication';
 import { PostgresStorageErrorParser } from './storage/PostgresStorageErrorParser';
+import { createLogger } from './logger/createLogger';
+import { RequestLogger } from './logger/RequestLogger';
+import { TranslationDictionary } from './translation/TranslationDictionary';
+
+import messages from './messages/messages.json';
 
 const port = process.env.PORT || PORT;
 
@@ -29,6 +36,11 @@ const connection = knex({
     pool: { min: poolMinSize, max: poolMaxSize }
 });
 
+const logger = createLogger(
+    path.join(process.cwd(), 'logs', 'application-%DATE%.log')
+);
+const requestLogger = new RequestLogger(logger);
+
 (async () => {
     try {
         await retryAction(
@@ -38,24 +50,34 @@ const connection = knex({
             Number(process.env.DB_CONNECION_RETRY_INTERVAL)
         );
     } catch (error) {
-        console.log(error);
+        logger.error(error.message);
         return;
     }
 
-    console.log('connection established');
+    logger.info('connection established');
 
     const dbErrorMapper = new PostgresStorageErrorParser();
 
-    createApplication(
-        new UserService(
+    createApplication({
+        context: {
+            translationDictionary: new TranslationDictionary(messages),
+            requestLogger
+        },
+        userService: new UserService(
             new UserPersistentStorage(connection, new UserDataMapper(), dbErrorMapper)
         ),
-        new GroupService(
+        groupService: new GroupService(
             new GroupPersistentStorage(
                 connection,
                 new GroupDataMapper(),
                 dbErrorMapper
             )
         )
-    ).listen(port, () => console.log(`server has started ${port}`));
+    }).listen(port, () => logger.info(`server has started ${port}`));
 })();
+
+function logUncaughtError(error: Error) {
+    logger.error(error.message, { ...error });
+}
+process.on('uncaughtException', logUncaughtError);
+process.on('unhandledRejection', logUncaughtError);

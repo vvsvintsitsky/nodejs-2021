@@ -1,7 +1,6 @@
 import { Router } from 'express';
-import { ConflictDataRequestError } from '../error/ConflictDataRequestError';
+import { Context } from '../context/Context';
 
-import { CustomRequestError } from '../error/CustomRequestError';
 import { EntityNotFoundError } from '../error/EntityNotFoundError';
 import { UniqueConstraintViolationError } from '../error/UniqueConstraintViolationError';
 
@@ -18,46 +17,69 @@ import {
 
 const USER_PATH = '/user/:id';
 
-const userValidationMiddleware = createValidationMiddleware(validateUser);
-
-const userIdValidationMiddleware = createValidationMiddleware(
-    validateUserId,
-    extractDataFromParams
-);
-
-export function createUserRouter(userService: UserService): Router {
+export function createUserRouter(
+    userService: UserService,
+    context: Context
+): Router {
     const router = Router();
 
+    const userValidationMiddleware = createValidationMiddleware({
+        validate: validateUser,
+        context
+    });
+
+    const userIdValidationMiddleware = createValidationMiddleware({
+        validate: validateUserId,
+        extractDataToValidate: extractDataFromParams,
+        context
+    });
+
+    const { requestLogger: logger, translationDictionary } = context;
+
     router.get(USER_PATH, userIdValidationMiddleware, async (req, res, next) => {
+        const userId = req.params.id;
+
         try {
-            res.json(await userService.getById(req.params.id));
+            res.json(await userService.getById(userId));
         } catch (error) {
-            if (error instanceof EntityNotFoundError) {
-                return next(new CustomRequestError(404, error.message));
+            if (!(error instanceof EntityNotFoundError)) {
+                return next(error);
             }
-            return next(error);
+
+            logger.warn(error.message, req);
+            res.status(404).json(error.message);
         }
     });
 
-    router.delete(USER_PATH, userIdValidationMiddleware, async (req, res, next) => {
-        try {
-            await userService.markAsDeleted(req.params.id);
-            res.sendStatus(200);
-        } catch (error) {
-            return next(error);
+    router.delete(
+        USER_PATH,
+        userIdValidationMiddleware,
+        async (req, res, next) => {
+            try {
+                await userService.markAsDeleted(req.params.id);
+                res.sendStatus(200);
+            } catch (error) {
+                return next(error);
+            }
         }
-    });
+    );
 
     router.put(USER_PATH, userValidationMiddleware, async (req, res, next) => {
+        const userId = req.params.id;
+
         try {
-            await userService.update(req.params.id, req.body);
+            await userService.update(userId, req.body);
             res.sendStatus(200);
         } catch (error) {
             if (error instanceof EntityNotFoundError) {
-                return next(new CustomRequestError(404, error.message));
+                logger.warn(error.message, req);
+                res.status(404).json(error.message);
+                return;
             }
             if (error instanceof UniqueConstraintViolationError) {
-                return next(new ConflictDataRequestError());
+                logger.warn(error.message, req);
+                res.status(422).json(translationDictionary.getTranslation('conflictData'));
+                return;
             }
             return next(error);
         }
@@ -69,7 +91,9 @@ export function createUserRouter(userService: UserService): Router {
             res.sendStatus(201);
         } catch (error) {
             if (error instanceof UniqueConstraintViolationError) {
-                return next(new ConflictDataRequestError());
+                logger.warn(error.message, req);
+                res.status(422).json(translationDictionary.getTranslation('conflictData'));
+                return;
             }
             return next(error);
         }
@@ -77,7 +101,10 @@ export function createUserRouter(userService: UserService): Router {
 
     router.post(
         '/autoSuggest',
-        createValidationMiddleware(validateAutosuggest),
+        createValidationMiddleware({
+            validate: validateAutosuggest,
+            context
+        }),
         async (req, res, next) => {
             const { loginPart, limit } = req.body;
             try {

@@ -5,13 +5,24 @@ import { GroupService } from './service/GroupService';
 
 import { createUserRouter } from './router/createUserRouter';
 import { createGroupRouter } from './router/createGroupRouter';
+import { createErrorHandlerMiddleware } from './error/errorHandlerMiddleware';
+import { createRequestLoggingMiddleware } from './logger/createRequestLoggingMiddleware';
+import { withRequestExecutionTimeLog } from './logger/withRequestExecutionTimeLog';
+import { Context } from './context/Context';
 
-import { errorHandlerMiddleware } from './error/errorHandlerMiddleware';
-
-export function createApplication(userService: UserService, groupService: GroupService): Express {
+export function createApplication({
+    userService,
+    groupService,
+    context
+}: {
+  userService: UserService;
+  groupService: GroupService;
+  context: Context,
+}): Express {
     return express()
         .use(express.json())
-        .use(errorHandlerMiddleware)
-        .use('/users', createUserRouter(userService))
-        .use('/groups', createGroupRouter(groupService));
+        .use(withRequestExecutionTimeLog(createRequestLoggingMiddleware)(context))
+        .use(createErrorHandlerMiddleware(context))
+        .use('/users', createUserRouter(userService, context))
+        .use('/groups', createGroupRouter(groupService, context));
 }
