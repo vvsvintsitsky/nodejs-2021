@@ -1,4 +1,5 @@
 import express, { Express } from 'express';
+import cors from 'cors';
 
 import { UserService } from './service/UserService';
 import { GroupService } from './service/GroupService';
@@ -17,9 +18,10 @@ export function createApplication({
 }: {
   userService: UserService;
   groupService: GroupService;
-  context: Context,
+  context: Context;
 }): Express {
     return express()
+        .use(cors())
         .use(express.json())
         .use(withRequestExecutionTimeLog(createRequestLoggingMiddleware)(context))
         .use(createErrorHandlerMiddleware(context))
