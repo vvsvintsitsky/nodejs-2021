@@ -31,7 +31,7 @@ const poolMinSize =
 const poolMaxSize =
   Number(process.env.DB_CONNECION_POOL_MAX_SIZE) || POOL_MAX_SIZE;
 
-const tokenSecret = process.env.TOKEN_SECRET ?? 'asdasd';
+const tokenSecret = process.env.TOKEN_SECRET ?? 'zzzz';
 const tokenExpirationTimeSeconds = Number(process.env.TOKEN_EXPIRATION_TIME_SECONDS) ?? 600;
 
 const connection = knex({
