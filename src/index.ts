@@ -31,6 +31,9 @@ const poolMinSize =
 const poolMaxSize =
   Number(process.env.DB_CONNECION_POOL_MAX_SIZE) || POOL_MAX_SIZE;
 
+const tokenSecret = process.env.TOKEN_SECRET ?? 'asdasd';
+const tokenExpirationTimeSeconds = Number(process.env.TOKEN_EXPIRATION_TIME_SECONDS) ?? 600;
+
 const connection = knex({
     client: 'pg',
     connection: process.env.DATASOURCE_URL,
@@ -74,7 +77,7 @@ const requestLogger = new RequestLogger(logger);
                 dbErrorMapper
             )
         ),
-        authenticationService: new AuthenticationService(userStorage, 600, 'asdasdasd')
+        authenticationService: new AuthenticationService(userStorage, tokenExpirationTimeSeconds, tokenSecret)
     }).listen(port, () => logger.info(`server has started ${port}`));
 })();
 
