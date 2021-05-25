@@ -22,6 +22,7 @@ import { RequestLogger } from './logger/RequestLogger';
 import { TranslationDictionary } from './translation/TranslationDictionary';
 
 import messages from './messages/messages.json';
+import { AuthenticationService } from './service/AuthenticationService';
 
 const port = process.env.PORT || PORT;
 
@@ -58,21 +59,22 @@ const requestLogger = new RequestLogger(logger);
 
     const dbErrorMapper = new PostgresStorageErrorParser();
 
+    const userStorage = new UserPersistentStorage(connection, new UserDataMapper(), dbErrorMapper);
+
     createApplication({
         context: {
             translationDictionary: new TranslationDictionary(messages),
             requestLogger
         },
-        userService: new UserService(
-            new UserPersistentStorage(connection, new UserDataMapper(), dbErrorMapper)
-        ),
+        userService: new UserService(userStorage),
         groupService: new GroupService(
             new GroupPersistentStorage(
                 connection,
                 new GroupDataMapper(),
                 dbErrorMapper
             )
-        )
+        ),
+        authenticationService: new AuthenticationService(userStorage, 600, 'asdasdasd')
     }).listen(port, () => logger.info(`server has started ${port}`));
 })();
 

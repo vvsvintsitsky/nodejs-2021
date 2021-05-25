@@ -2,20 +2,20 @@ import assert from 'assert';
 
 import { v4 as uuid } from 'uuid';
 
-import { RequestUtils } from './util';
+import { RequestUtils, setupAuthenticatedRequests } from './util';
 
 import { User } from '../src/model/User';
 import { createUsers } from './mockDataUtils';
+import { Credentials } from './types';
 
 const mockUsers = createUsers(3);
 
 const [defaultUser, ...restUsers] = mockUsers;
 defaultUser.login = `login_${uuid()}`;
 
-export async function testUserApi({
-    sendRequest,
-    sendRequestAndParseResponse
-}: RequestUtils): Promise<void> {
+export async function testUserApi(requestUtils: RequestUtils, credentials: Credentials): Promise<void> {
+    const { sendRequest, sendRequestAndParseResponse } = await setupAuthenticatedRequests(requestUtils, credentials);
+
     const createUser = (user: User) =>
         sendRequest({
             path: '/users/create',

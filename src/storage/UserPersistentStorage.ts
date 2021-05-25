@@ -27,12 +27,12 @@ export class UserPersistentStorage implements UserStorage {
         return this.userMapper.fromPersistence(users[0]);
     }
 
-    public async update(id: string, user: User): Promise<void> {
-        await this.updateUser(id, this.userMapper.toPersistence(user));
+    public update(id: string, user: User): Promise<void> {
+        return this.updateUser(id, this.userMapper.toPersistence(user));
     }
 
-    public async create(user: User): Promise<void> {
-        await this.storageErrorParser.performUpdateOperation(() =>
+    public create(user: User): Promise<void> {
+        return this.storageErrorParser.performUpdateOperation(() =>
             this.connection(TABLE_NAME).insert(this.userMapper.toPersistence(user))
         );
     }
@@ -50,8 +50,20 @@ export class UserPersistentStorage implements UserStorage {
         return users.map((user) => this.userMapper.fromPersistence(user));
     }
 
-    public async markAsDeleted(id: string): Promise<void> {
-        await this.updateUser(id, { is_deleted: true });
+    public markAsDeleted(id: string): Promise<void> {
+        return this.updateUser(id, { is_deleted: true });
+    }
+
+    public async getByLoginAndPassword(login: string, password: string): Promise<User> {
+        const [user] = await this.connection(TABLE_NAME).select().where(
+            this.getActiveUserPredicate({ login, password })
+        );
+
+        if (!user) {
+            throw new EntityNotFoundError('User with specified credentials was not found');
+        }
+
+        return this.userMapper.fromPersistence(user);
     }
 
     private assertUniqueUserOperationResult(id: string, entriesCount: number) {

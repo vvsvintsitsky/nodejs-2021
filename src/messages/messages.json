@@ -1,4 +1,7 @@
 {
   "conflictData": "This record conflicts with data in the database",
-  "unhandledError": "An unknown error occured"
+  "unhandledError": "An unknown error occured",
+  "loginFailed": "Login attempt failed",
+  "unauthorized": "Unaunthorized",
+  "forbidden": "Forbidden"
 }
