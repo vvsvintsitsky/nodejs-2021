@@ -4,9 +4,10 @@ import { Permission } from '../src/model/Permission';
 import { Group } from '../src/model/Group';
 import { User } from '../src/model/User';
 
-import { RequestUtils } from './util';
+import { RequestUtils, setupAuthenticatedRequests } from './util';
 
 import { createGroups, createUsers } from './mockDataUtils';
+import { Credentials } from './types';
 
 const sortGroupsById = (groups: Group[]) =>
     groups.concat().sort((left, right) => left.id.localeCompare(right.id));
@@ -22,10 +23,9 @@ const mockGroups = sortGroupsById(
 
 const mockUsers = createUsers(2);
 
-export async function testGroupApi({
-    sendRequest,
-    sendRequestAndParseResponse
-}: RequestUtils): Promise<void> {
+export async function testGroupApi(requestUtils: RequestUtils, credentials: Credentials): Promise<void> {
+    const { sendRequest, sendRequestAndParseResponse } = await setupAuthenticatedRequests(requestUtils, credentials);
+
     const createGroup = (group: Group) =>
         sendRequest({
             path: '/groups/create',

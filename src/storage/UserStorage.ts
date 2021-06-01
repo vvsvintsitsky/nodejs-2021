@@ -10,4 +10,6 @@ export interface UserStorage {
   getAutoSuggestUsers(loginSubstring: string, limit: number): Promise<User[]>;
 
   markAsDeleted(id: string): Promise<void>;
+
+  getByLoginAndPassword(login: string, password: string): Promise<User>;
 }

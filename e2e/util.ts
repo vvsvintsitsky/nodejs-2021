@@ -1,8 +1,9 @@
 import { request, IncomingMessage, Server } from 'http';
 
 import { Express } from 'express';
+import { Credentials } from './types';
 
-export function parseResponse(res: IncomingMessage): Promise<string> {
+export function parseResponse<T = Record<string, unknown>>(res: IncomingMessage): Promise<T> {
     return new Promise((resolve) => {
         res.setEncoding('utf8');
         let responseBody = '';
@@ -64,14 +65,14 @@ export function makeRequest({
     });
 }
 
-type StrippedRequestARgs = Omit<RequestArgs, 'port' | 'host'>;
+type StrippedRequestArgs = Omit<RequestArgs, 'port' | 'host'>;
 
 interface RequestSender {
-    (args: StrippedRequestARgs): Promise<IncomingMessage>
+    (args: StrippedRequestArgs): Promise<IncomingMessage>
 }
 
 interface RequestSenderAndParser<T = unknown> {
-    (args: StrippedRequestARgs): Promise<T>
+    (args: StrippedRequestArgs): Promise<T>
 }
 
 export interface RequestUtils {
@@ -85,6 +86,24 @@ export function setupRequests(host: string, port?: number): RequestUtils {
         sendRequest,
         sendRequestAndParseResponse: args => sendRequest(args).then(parseResponse)
     };
+}
+
+export async function setupAuthenticatedRequests({
+    sendRequest, sendRequestAndParseResponse
+}: RequestUtils, credentials: Credentials): Promise<RequestUtils> {
+    const loginResponse = await sendRequest({ path: '/login', method: 'POST', payload: credentials });
+    const { token } = await parseResponse<{ token: string }>(loginResponse);
+
+    function withAuthHeader<T>(requestSender: (args: StrippedRequestArgs) => T): (args: StrippedRequestArgs) => T {
+        return ({ headers = {}, ...args }) => requestSender({ ...args, headers: { authorization: token, ...headers } });
+    }
+
+    const authenticatedRequestUtils: RequestUtils = {
+        sendRequest: withAuthHeader(sendRequest),
+        sendRequestAndParseResponse: withAuthHeader(sendRequestAndParseResponse)
+    };
+
+    return authenticatedRequestUtils;
 }
 
 interface ServerHandle {
