@@ -20,6 +20,7 @@ export function createLoginRouter(
             if (error instanceof EntityNotFoundError) {
                 requestLogger.warn(error.message, req);
                 res.status(403).json(translationDictionary.getTranslation('loginFailed'));
+                return;
             }
             return next(error);
         }
