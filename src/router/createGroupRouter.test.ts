@@ -66,7 +66,7 @@ describe('createGroupRouter', () => {
                 return createGroup(response);
             });
 
-            it('then should return "created" status', async () => {
+            it('then should return "created" status', () => {
                 expect(response.sendStatus).toHaveBeenCalledWith(201);
             });
         });
@@ -83,14 +83,14 @@ describe('createGroupRouter', () => {
             describe('when user is requested', () => {
                 let response: Response;
 
-                beforeEach(async () => {
+                beforeEach(() => {
                     response = mockResponse();
                     response.json = jest.fn();
                     response.status = jest.fn().mockReturnValue(response);
                     return createGroup(response);
                 });
 
-                it('then should write error message to response', async () => {
+                it('then should write error message to response', () => {
                     expect(response.json).toHaveBeenCalledWith(conflictMessage);
                 });
 
@@ -114,7 +114,7 @@ describe('createGroupRouter', () => {
             describe('when group is created', () => {
                 let spy: () => void;
 
-                beforeEach(async () => {
+                beforeEach(() => {
                     spy = jest.fn();
                     return createGroup(mockResponse(), spy);
                 });

@@ -63,13 +63,13 @@ describe('createUserRouter', () => {
             describe('when user is requested', () => {
                 let response: Response;
 
-                beforeEach(async () => {
+                beforeEach(() => {
                     response = mockResponse();
                     response.json = jest.fn();
                     return getUser(response);
                 });
 
-                it('then should return user json', async () => {
+                it('then should return user json', () => {
                     expect(response.json).toHaveBeenCalledWith(user);
                 });
             });
@@ -85,14 +85,14 @@ describe('createUserRouter', () => {
             describe('when user is requested', () => {
                 let response: Response;
 
-                beforeEach(async () => {
+                beforeEach(() => {
                     response = mockResponse();
                     response.json = jest.fn();
                     response.status = jest.fn().mockReturnValue(response);
                     return getUser(response);
                 });
 
-                it('then should write error message to response', async () => {
+                it('then should write error message to response', () => {
                     expect(response.json).toHaveBeenCalledWith(error.message);
                 });
 
@@ -116,7 +116,7 @@ describe('createUserRouter', () => {
             describe('when user is requested', () => {
                 let spy: () => void;
 
-                beforeEach(async () => {
+                beforeEach(() => {
                     spy = jest.fn();
                     return getUser(mockResponse(), spy);
                 });
