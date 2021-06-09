@@ -29,15 +29,31 @@ describe('createUserRouter', () => {
     });
 
     describe('get user by id', () => {
-        const user: User = {
-            age: 20,
-            id: uuid(),
-            isDeleted: false,
-            login: 'login',
-            password: 'password'
+        const userId = uuid();
+        let request: Request;
+
+        const getUser = (response: Response, nextFn: () => void = jest.fn()) => {
+            const router = createRouter();
+            return router(request, response, nextFn);
         };
 
+        beforeEach(() => {
+            request = mockRequest({
+                method: 'GET',
+                url: `/user/${userId}`,
+                host: ''
+            });
+        });
+
         describe('given user is present', () => {
+            const user: User = {
+                age: 20,
+                id: userId,
+                isDeleted: false,
+                login: 'login',
+                password: 'password'
+            };
+
             beforeEach(() => {
                 when(userServiceMock.getById(user.id)).thenReturn(
                     Promise.resolve(user)
@@ -48,15 +64,9 @@ describe('createUserRouter', () => {
                 let response: Response;
 
                 beforeEach(async () => {
-                    const request = mockRequest({
-                        method: 'GET',
-                        url: `/user/${user.id}`,
-                        host: ''
-                    });
-                    const router = createRouter();
                     response = mockResponse();
                     response.json = jest.fn();
-                    return router(request, response, jest.fn());
+                    return getUser(response);
                 });
 
                 it('then should return user json', async () => {
@@ -66,7 +76,6 @@ describe('createUserRouter', () => {
         });
 
         describe('given user is missing', () => {
-            const userId = uuid();
             const error = new EntityNotFoundError('stub message');
 
             beforeEach(() => {
@@ -75,22 +84,15 @@ describe('createUserRouter', () => {
 
             describe('when user is requested', () => {
                 let response: Response;
-                let request: Request;
 
                 beforeEach(async () => {
-                    request = mockRequest({
-                        method: 'GET',
-                        url: `/user/${userId}`,
-                        host: ''
-                    });
-                    const router = createRouter();
                     response = mockResponse();
                     response.json = jest.fn();
                     response.status = jest.fn().mockReturnValue(response);
-                    return router(request, response, jest.fn());
+                    return getUser(response);
                 });
 
-                it('then write error message to response', async () => {
+                it('then should write error message to response', async () => {
                     expect(response.json).toHaveBeenCalledWith(error.message);
                 });
 
@@ -105,7 +107,6 @@ describe('createUserRouter', () => {
         });
 
         describe('given unknown error occurs', () => {
-            const userId = uuid();
             const error = new Error('stub message');
 
             beforeEach(() => {
@@ -116,14 +117,8 @@ describe('createUserRouter', () => {
                 let spy: () => void;
 
                 beforeEach(async () => {
-                    const request = mockRequest({
-                        method: 'GET',
-                        url: `/user/${userId}`,
-                        host: ''
-                    });
-                    const router = createRouter();
                     spy = jest.fn();
-                    return router(request, mockResponse(), spy);
+                    return getUser(mockResponse(), spy);
                 });
 
                 it('then should forward error to the next handler', () => {
