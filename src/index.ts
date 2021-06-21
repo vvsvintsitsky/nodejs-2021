@@ -1,5 +1,7 @@
 import path from 'path';
 
+import config from 'config';
+
 import knex from 'knex';
 
 import { UserDataMapper } from './data-mapper/UserDataMapper';
@@ -13,8 +15,6 @@ import { GroupService } from './service/GroupService';
 
 import { retryAction } from './utils/retryAction';
 
-import { PORT, POOL_MIN_SIZE, POOL_MAX_SIZE } from './config';
-
 import { createApplication } from './createApplication';
 import { PostgresStorageErrorParser } from './storage/PostgresStorageErrorParser';
 import { createLogger } from './logger/createLogger';
@@ -23,16 +23,23 @@ import { TranslationDictionary } from './translation/TranslationDictionary';
 
 import messages from './messages/messages.json';
 import { AuthenticationService } from './service/AuthenticationService';
+import { DataSourceConfig, TokenConfig } from './config/types';
 
-const port = process.env.PORT || PORT;
+const port = process.env.PORT || config.get('port');
+
+const dbConfig = config.get<DataSourceConfig>('dataSource');
 
 const poolMinSize =
-  Number(process.env.DB_CONNECION_POOL_MIN_SIZE) || POOL_MIN_SIZE;
+  Number(process.env.DB_CONNECION_POOL_MIN_SIZE) || dbConfig.pool.minSize;
 const poolMaxSize =
-  Number(process.env.DB_CONNECION_POOL_MAX_SIZE) || POOL_MAX_SIZE;
+  Number(process.env.DB_CONNECION_POOL_MAX_SIZE) || dbConfig.pool.maxSize;
 
-const tokenSecret = process.env.TOKEN_SECRET ?? 'zzzz';
-const tokenExpirationTimeSeconds = Number(process.env.TOKEN_EXPIRATION_TIME_SECONDS) ?? 600;
+
+const tokenConfig = config.get<TokenConfig>('token');
+
+const tokenSecret = process.env.TOKEN_SECRET ?? tokenConfig.secret;
+const tokenExpirationTimeSeconds =
+  Number(process.env.TOKEN_EXPIRATION_TIME_SECONDS) ?? tokenConfig.expirationTime;
 
 const connection = knex({
     client: 'pg',
@@ -62,7 +69,11 @@ const requestLogger = new RequestLogger(logger);
 
     const dbErrorMapper = new PostgresStorageErrorParser();
 
-    const userStorage = new UserPersistentStorage(connection, new UserDataMapper(), dbErrorMapper);
+    const userStorage = new UserPersistentStorage(
+        connection,
+        new UserDataMapper(),
+        dbErrorMapper
+    );
 
     createApplication({
         context: {
@@ -77,7 +88,11 @@ const requestLogger = new RequestLogger(logger);
                 dbErrorMapper
             )
         ),
-        authenticationService: new AuthenticationService(userStorage, tokenExpirationTimeSeconds, tokenSecret)
+        authenticationService: new AuthenticationService(
+            userStorage,
+            tokenExpirationTimeSeconds,
+            tokenSecret
+        )
     }).listen(port, () => logger.info(`server has started ${port}`));
 })();
 
