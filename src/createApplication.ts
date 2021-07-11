@@ -13,21 +13,29 @@ import { Context } from './context/Context';
 import { AuthenticationService } from './service/AuthenticationService';
 import { createLoginRouter } from './router/createLoginRouter';
 import { createVerifyAuthenticationMiddleware } from './middleware/createVerifyAuthenticationMiddleware';
+import { createFileUploadRouter } from './createFileUploadRouter';
+import { createJsonEchoRouter } from './createJsonEchoRouter';
 
 export function createApplication({
     userService,
     groupService,
     authenticationService,
-    context
+    context,
+    uploadDirectory,
+    uploadFolderName,
 }: {
   userService: UserService;
   groupService: GroupService;
   authenticationService: AuthenticationService,
   context: Context;
+  uploadDirectory: string;
+  uploadFolderName: string;
 }): Express {
     return express()
         .use(cors())
+        .use(createFileUploadRouter(context, uploadDirectory, uploadFolderName))
         .use(express.json())
+        .use(createJsonEchoRouter(context))
         .use(withRequestExecutionTimeLog(createRequestLoggingMiddleware)(context))
         .use(createErrorHandlerMiddleware(context))
         .use(createLoginRouter(authenticationService, context))

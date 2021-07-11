@@ -46,17 +46,17 @@ const logger = createLogger(
 const requestLogger = new RequestLogger(logger);
 
 (async () => {
-    try {
-        await retryAction(
-            Number(process.env.DB_CONNECTION_RETRY_COUNT),
-            () => connection.raw('select 1+1 as result'),
-            'Failed to establish connection',
-            Number(process.env.DB_CONNECION_RETRY_INTERVAL)
-        );
-    } catch (error) {
-        logger.error(error.message);
-        return;
-    }
+    // try {
+    //     await retryAction(
+    //         Number(process.env.DB_CONNECTION_RETRY_COUNT),
+    //         () => connection.raw('select 1+1 as result'),
+    //         'Failed to establish connection',
+    //         Number(process.env.DB_CONNECION_RETRY_INTERVAL)
+    //     );
+    // } catch (error) {
+    //     logger.error(error.message);
+    //     return;
+    // }
 
     logger.info('connection established');
 
@@ -77,7 +77,9 @@ const requestLogger = new RequestLogger(logger);
                 dbErrorMapper
             )
         ),
-        authenticationService: new AuthenticationService(userStorage, tokenExpirationTimeSeconds, tokenSecret)
+        authenticationService: new AuthenticationService(userStorage, tokenExpirationTimeSeconds, tokenSecret),
+        uploadDirectory: process.cwd(),
+        uploadFolderName: "uploads",
     }).listen(port, () => logger.info(`server has started ${port}`));
 })();
 
